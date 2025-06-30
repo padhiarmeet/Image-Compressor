@@ -19,6 +19,10 @@ class Homepage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+
+    final screenHeight = MediaQuery.of(context).size.height;
+    final containerHeight = screenHeight * 0.6;
+
     ImageController imageController = Get.put(ImageController());
 
     return Scaffold(
@@ -75,34 +79,104 @@ class Homepage extends StatelessWidget {
           ),
         ),
       ),
-      body: Column(
-        mainAxisSize: MainAxisSize.max,
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Text('Total Images here - '),
-          ElevatedButton(
-            onPressed: () {
-              imageController.pickImageFromGallery();
-            },
-            child: Text('Add Image for Compression'),
+      // body: Column(
+      //   mainAxisSize: MainAxisSize.max,
+      //   mainAxisAlignment: MainAxisAlignment.center,
+      //   children: [
+      //     Text('Total Images here - '),
+      //     ElevatedButton(
+      //       onPressed: () {
+      //         imageController.pickImageFromGallery();
+      //       },
+      //       child: Text('Add Image for Compression'),
+      //     ),
+      //     ElevatedButton(
+      //       onPressed: () {
+      //         imageController.compressImages();
+      //       },
+      //       child: Text('Compress File'),
+      //     ),
+      //     Obx(() {
+      //       if (imageController.getCompressList().isEmpty)
+      //         return Text('NO file to compress');
+      //       else
+      //         return imageDisplay(
+      //           imageController.getCompressList(),
+      //           'Compressed Images',
+      //         );
+      //     }),
+      //   ],
+      // ),
+      body: SafeArea(
+          child: Padding(
+              padding: EdgeInsets.only(top: 10),
+              child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                const SizedBox(height: 20,),
+
+                //region Header "Compress Smart"
+                RichText(
+                    text: TextSpan(
+                      children: [
+                        TextSpan(
+                          text: "Compress ",
+                          style: TextStyle(
+                            color: Theme.of(context).colorScheme.onBackground,
+                            fontSize: 32,
+                            fontWeight: FontWeight.w800,
+                            letterSpacing: -1,
+                          )
+                        ),
+                        TextSpan(
+                          text: "Smart",
+                          style: TextStyle(
+                            foreground: Paint()..shader = LinearGradient(colors: [
+                              Theme.of(context).colorScheme.primary,
+                              Theme.of(context).colorScheme.secondary
+                            ]).createShader(const Rect.fromLTWH(0, 0, 200, 70)),
+                            fontSize: 32,
+                            fontWeight: FontWeight.w800,
+                            letterSpacing: -1,
+                          )
+                        )
+                      ]
+                    )),
+                //endregion
+                SizedBox(height: 35,),
+                Container(
+                  height: containerHeight,
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(28),
+                    border: Border.all(
+                      color: Theme.of(context).colorScheme.primary.withOpacity(0.3),
+                      width: 2,
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Theme.of(context).primaryColor.withOpacity(0.1),
+                        blurRadius: 30,
+                        offset: const Offset(0, 10),
+                        spreadRadius: 0,
+                      ),
+                      // BoxShadow(
+                      //   color:
+                      //   (widget.isDarkMode
+                      //       ? Colors.black
+                      //       : Colors.grey.shade300)
+                      //       .withOpacity(0.05),
+                      //   blurRadius: 20,
+                      //   offset: const Offset(0, 8),
+                      // ),
+                    ]
+                  ),
+                  child: Container(),
+                )
+
+              ],
           ),
-          ElevatedButton(
-            onPressed: () {
-              imageController.compressImages();
-            },
-            child: Text('Compress File'),
-          ),
-          Obx(() {
-            if (imageController.getCompressList().isEmpty)
-              return Text('NO file to compress');
-            else
-              return imageDisplay(
-                imageController.getCompressList(),
-                'Compressed Images',
-              );
-          }),
-        ],
-      ),
+          )),
       bottomNavigationBar: ClipRect(
         child: BackdropFilter(
           filter: ImageFilter.blur(sigmaY: 20, sigmaX: 20),

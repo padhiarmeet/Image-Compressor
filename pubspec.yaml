@@ -35,6 +35,8 @@ dependencies:
   share_plus:
   flutter_card_swiper:
   flutter_image_compress:
+  get_storage: ^2.1.1
+  dotted_border: ^3.1.0
   flutter:
     sdk: flutter
 

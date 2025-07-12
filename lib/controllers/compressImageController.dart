@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:get/get.dart';
 import 'package:image_compressor/models/compressImageModel.dart';
 
@@ -41,6 +43,10 @@ class ImageController{
 
   Future<void> compressToTargetSize(int size) async{
     await _imageModel.compressToTargetSize(size);
+  }
+
+  Future<void> shareImages(List<CompressedImage> data) async{
+    await _imageModel.shareImages(data);
   }
 
 }

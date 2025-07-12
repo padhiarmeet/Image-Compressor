@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:share_plus/share_plus.dart';
 
 class CompressedImage {
   int? id;
@@ -146,7 +147,7 @@ class ImageModel extends GetxController {
     _compressImages.clear();
 
     if (_originalImages.isEmpty) {
-      Get.snackbar('Error', 'Please select images first');
+      Get.snackbar('Error', 'Please select images first',snackPosition: SnackPosition.BOTTOM);
       return;
     }
 
@@ -201,7 +202,7 @@ class ImageModel extends GetxController {
     _compressImages.clear();
 
     if (_originalImages.isEmpty) {
-      Get.snackbar('Error', 'Please select images first');
+      Get.snackbar('Error', 'Please select images first',snackPosition: SnackPosition.BOTTOM);
       return;
     }
 
@@ -256,6 +257,25 @@ class ImageModel extends GetxController {
       Get.snackbar('Compression Failed', 'Images could not be compressed to target size');
     } else {
       Get.snackbar('Success', 'Images compressed to ≤ $targetSizeKB KB');
+    }
+  }
+
+//endregion
+
+  //region METHOD FOR SHARING IMAGES
+
+  Future<void> shareImages(List<CompressedImage> files) async {
+
+    final List<XFile> xFiles = files.map((file) => XFile(file.filePath)).toList();
+
+    final params = ShareParams(
+      files: xFiles,
+    );
+
+    final shareResult = await SharePlus.instance.share(params);
+
+    if (shareResult.status == ShareResultStatus.success) {
+      Get.snackbar('Success','Image shared successfully !',snackPosition: SnackPosition.BOTTOM);
     }
   }
 

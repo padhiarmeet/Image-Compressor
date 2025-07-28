@@ -26,7 +26,6 @@ class HomeTabController extends GetxController with GetSingleTickerProviderState
     selectedIndex.value = index;
   }
 
-  // Method to get tab icon based on index
   IconData getTabIcon(int index) {
     switch (index) {
       case 0:
@@ -38,7 +37,6 @@ class HomeTabController extends GetxController with GetSingleTickerProviderState
     }
   }
 
-  // Additional helper methods you might find useful
   String getTabTitle(int index) {
     if (index >= 0 && index < tabTitles.length) {
       return tabTitles[index];
@@ -50,9 +48,7 @@ class HomeTabController extends GetxController with GetSingleTickerProviderState
     return selectedIndex.value == index;
   }
 
-  // Method to get the current tab title
   String get currentTabTitle => getTabTitle(selectedIndex.value);
 
-  // Method to get the current tab icon
   IconData get currentTabIcon => getTabIcon(selectedIndex.value);
 }

@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
+import 'package:image_gallery_saver_plus/image_gallery_saver_plus.dart';
 import 'package:path_provider/path_provider.dart' as path_provider;
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -14,6 +15,7 @@ class CompressedImage {
   double compressedSize;
   DateTime? compressedAt;
   String format;
+  bool isCompressed;
 
   CompressedImage({
     this.id,
@@ -22,6 +24,7 @@ class CompressedImage {
     required this.compressedSize,
     this.compressedAt,
     required this.format,
+    this.isCompressed = false,
   });
 
   Map<String, dynamic> toMap() {
@@ -32,6 +35,7 @@ class CompressedImage {
       'compressedSize': compressedSize,
       'compressedAt': compressedAt?.toIso8601String(),
       'format': format,
+      'isCompressed': isCompressed,
     };
   }
 
@@ -45,10 +49,10 @@ class CompressedImage {
           ? DateTime.parse(map['compressedAt'])
           : null,
       format: map['format'],
+      isCompressed: map['isCompressed'] ?? false,
     );
   }
 }
-
 
 class ImageModel extends GetxController {
 
@@ -68,7 +72,7 @@ class ImageModel extends GetxController {
     return _originalImages;
   }
 
-  void clearOriginalList() {
+    void clearOriginalList() {
     _originalImages.clear();
   }
   //endregion
@@ -96,9 +100,29 @@ class ImageModel extends GetxController {
     _compressImages.clear();
     _originalImages.clear();
   }
+
   String getImageFormat(String path) {
     final ext = path.split('.').last.toLowerCase();
     return ext; // png, jpg, jpeg, etc.
+  }
+
+  // New method to check if all images are already compressed
+  bool areAllImagesCompressed() {
+    if (_originalImages.isEmpty) return false;
+    return _originalImages.every((image) => image.isCompressed);
+  }
+
+  // New method to get compression status summary
+  Map<String, int> getCompressionStatus() {
+    int compressed = _originalImages.where((image) => image.isCompressed).length;
+    int total = _originalImages.length;
+    int uncompressed = total - compressed;
+
+    return {
+      'total': total,
+      'compressed': compressed,
+      'uncompressed': uncompressed,
+    };
   }
   //endregion
 
@@ -123,7 +147,6 @@ class ImageModel extends GetxController {
       final List<XFile> images = await picker.pickMultiImage();
 
       //region Add Image in Original List
-
       if (images.isNotEmpty) {
         for (XFile oneImage in images) {
           addOriginalImage(
@@ -133,6 +156,7 @@ class ImageModel extends GetxController {
               compressedSize: 0,
               compressedAt: DateTime.now(),
               format: getImageFormat(oneImage.path),
+              isCompressed: false, // New images are not compressed
             ),
           );
         }
@@ -144,6 +168,18 @@ class ImageModel extends GetxController {
 
   //region Method for Compressing Image
   Future<void> compressImages() async {
+    // Check if all images are already compressed
+    if (areAllImagesCompressed()) {
+      Get.snackbar(
+        'Already Compressed',
+        'All images have already been compressed',
+        backgroundColor: Colors.orange[300],
+        colorText: Colors.black,
+        snackPosition: SnackPosition.BOTTOM,
+      );
+      return;
+    }
+
     _compressImages.clear();
 
     if (_originalImages.isEmpty) {
@@ -153,7 +189,10 @@ class ImageModel extends GetxController {
 
     final dir = await path_provider.getTemporaryDirectory();
 
-    for (var image in _originalImages) {
+    // Only compress images that haven't been compressed yet
+    final uncompressedImages = _originalImages.where((image) => !image.isCompressed).toList();
+
+    for (var image in uncompressedImages) {
       final originalFile = File(image.filePath);
 
       // Calculate original size in KB
@@ -184,21 +223,37 @@ class ImageModel extends GetxController {
             compressedSize: compressedSizeKB,
             compressedAt: DateTime.now(),
             format: image.format,
+            isCompressed: true, // Mark as compressed
           ),
         );
+
+        // Mark the original image as compressed
+        image.isCompressed = true;
       }
     }
 
     if (_compressImages.isEmpty) {
-      Get.snackbar('Compression Failed', 'All images failed to compress');
+      Get.snackbar('Compression Failed', 'All images failed to compress',snackPosition: SnackPosition.BOTTOM);
     } else {
-      Get.snackbar('Success', 'Images compressed successfully');
+      Get.snackbar('Success', 'Images compressed successfully',snackPosition: SnackPosition.BOTTOM);
     }
   }
   //endregion
 
   //region Method for compressing image to specific size
   Future<void> compressToTargetSize(int targetSizeKB) async {
+    // Check if all images are already compressed
+    if (areAllImagesCompressed()) {
+      Get.snackbar(
+        'Already Compressed',
+        'All images have already been compressed',
+        backgroundColor: Colors.orange[300],
+        colorText: Colors.black,
+        snackPosition: SnackPosition.BOTTOM,
+      );
+      return;
+    }
+
     _compressImages.clear();
 
     if (_originalImages.isEmpty) {
@@ -208,7 +263,10 @@ class ImageModel extends GetxController {
 
     final dir = await path_provider.getTemporaryDirectory();
 
-    for (var image in _originalImages) {
+    // Only compress images that haven't been compressed yet
+    final uncompressedImages = _originalImages.where((image) => !image.isCompressed).toList();
+
+    for (var image in uncompressedImages) {
       final originalFile = File(image.filePath);
       int quality = 95;
       XFile? result;
@@ -248,24 +306,182 @@ class ImageModel extends GetxController {
             compressedSize: compressedSizeKB,
             compressedAt: DateTime.now(),
             format: image.format,
+            isCompressed: true, // Mark as compressed
           ),
         );
+
+        // Mark the original image as compressed
+        image.isCompressed = true;
       }
     }
 
     if (_compressImages.isEmpty) {
-      Get.snackbar('Compression Failed', 'Images could not be compressed to target size');
+      Get.snackbar('Compression Failed', 'Images could not be compressed to target size',snackPosition: SnackPosition.BOTTOM);
     } else {
-      Get.snackbar('Success', 'Images compressed to ≤ $targetSizeKB KB');
+      final compressedCount = _compressImages.length;
+      Get.snackbar('Success', '$compressedCount images compressed to ≤ $targetSizeKB KB',snackPosition: SnackPosition.BOTTOM);
     }
   }
+  //endregion
 
-//endregion
+  //region Method for compressing image to specific Quality
+  Future<void> compressToTargetQuality(int targetQuality) async {
+    // Check if all images are already compressed
+    if (areAllImagesCompressed()) {
+      Get.snackbar(
+        'Already Compressed',
+        'All images have already been compressed',
+        backgroundColor: Colors.orange[300],
+        colorText: Colors.black,
+        snackPosition: SnackPosition.BOTTOM,
+      );
+      return;
+    }
+
+    _compressImages.clear();
+
+    if (_originalImages.isEmpty) {
+      Get.snackbar('Error', 'Please select images first', snackPosition: SnackPosition.BOTTOM);
+      return;
+    }
+
+    // Validate quality range
+    if (targetQuality < 1 || targetQuality > 100) {
+      Get.snackbar('Invalid Quality', 'Quality must be between 1-100', snackPosition: SnackPosition.BOTTOM);
+      return;
+    }
+
+    final dir = await path_provider.getTemporaryDirectory();
+
+    // Only compress images that haven't been compressed yet
+    final uncompressedImages = _originalImages.where((image) => !image.isCompressed).toList();
+
+    for (var image in uncompressedImages) {
+      final originalFile = File(image.filePath);
+
+      final targetPath =
+          '${dir.path}/${DateTime.now().microsecondsSinceEpoch}_${image.filePath.split('/').last}';
+
+      // Compress with the specified quality directly
+      final result = await FlutterImageCompress.compressAndGetFile(
+        image.filePath,
+        targetPath,
+        quality: targetQuality,
+        minWidth: 720,
+        minHeight: 720,
+      );
+
+      if (result != null) {
+        final compressedFile = File(result.path);
+        final compressedBytes = await compressedFile.readAsBytes();
+        final compressedSizeKB = compressedBytes.length / 1024;
+
+        _compressImages.add(
+          CompressedImage(
+            filePath: result.path,
+            originalSize: await originalFile.length() / 1024,
+            compressedSize: compressedSizeKB,
+            compressedAt: DateTime.now(),
+            format: image.format,
+            isCompressed: true, // Mark as compressed
+          ),
+        );
+
+        // Mark the original image as compressed
+        image.isCompressed = true;
+      }
+    }
+
+    if (_compressImages.isEmpty) {
+      Get.snackbar('Compression Failed', 'Images could not be compressed', snackPosition: SnackPosition.BOTTOM);
+    } else {
+      final compressedCount = _compressImages.length;
+      Get.snackbar('Success', '$compressedCount images compressed at $targetQuality% quality', snackPosition: SnackPosition.BOTTOM);
+    }
+  }
+  //endregion
+
+  //region METHOD FOR DOWNLOADING IMAGES TO GALLERY
+  Future<void> downloadImages() async {
+    if (_compressImages.isEmpty) {
+      Get.snackbar(
+        'No Images',
+        'No compressed images to download',
+        backgroundColor: Colors.orange[300],
+        colorText: Colors.black,
+        snackPosition: SnackPosition.BOTTOM,
+      );
+      return;
+    }
+
+    // Request storage permission
+    PermissionStatus status = await Permission.photos.request();
+    if (status.isDenied || status.isPermanentlyDenied) {
+      Get.snackbar(
+        'Storage Permission Required',
+        'Permission is denied. Please enable storage permission in settings.',
+        backgroundColor: Colors.red[300],
+        colorText: Colors.black,
+        snackPosition: SnackPosition.BOTTOM,
+      );
+      return;
+    }
+
+    try {
+      int successCount = 0;
+      int failCount = 0;
+
+      for (var image in _compressImages) {
+        final file = File(image.filePath);
+        final bytes = await file.readAsBytes();
+
+        // Generate a unique filename
+        final fileName = 'compressed_${DateTime.now().millisecondsSinceEpoch}.${image.format}';
+
+        final result = await ImageGallerySaverPlus.saveImage(
+          bytes,
+          name: fileName,
+          quality: 100,
+        );
+
+        if (result['isSuccess'] == true) {
+          successCount++;
+        } else {
+          failCount++;
+        }
+      }
+
+      if (successCount > 0) {
+        Get.snackbar(
+          'Download Complete',
+          '$successCount image${successCount == 1 ? '' : 's'} saved to gallery${failCount > 0 ? ' ($failCount failed)' : ''}',
+          backgroundColor: Colors.green[300],
+          colorText: Colors.black,
+          snackPosition: SnackPosition.BOTTOM,
+        );
+      } else {
+        Get.snackbar(
+          'Download Failed',
+          'Failed to save images to gallery',
+          backgroundColor: Colors.red[300],
+          colorText: Colors.black,
+          snackPosition: SnackPosition.BOTTOM,
+        );
+      }
+    } catch (e) {
+      Get.snackbar(
+        'Error',
+        'Failed to download images: $e',
+        backgroundColor: Colors.red[300],
+        colorText: Colors.black,
+        snackPosition: SnackPosition.BOTTOM,
+      );
+    }
+  }
+  //endregion
 
   //region METHOD FOR SHARING IMAGES
-
   Future<void> shareImages(List<CompressedImage> files) async {
-
     final List<XFile> xFiles = files.map((file) => XFile(file.filePath)).toList();
 
     final params = ShareParams(
@@ -278,6 +494,5 @@ class ImageModel extends GetxController {
       Get.snackbar('Success','Image shared successfully !',snackPosition: SnackPosition.BOTTOM);
     }
   }
-
 //endregion
 }

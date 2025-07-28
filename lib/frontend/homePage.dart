@@ -6,7 +6,6 @@ import 'package:flutter_card_swiper/flutter_card_swiper.dart';
 import 'package:get/get.dart';
 import 'package:image_compressor/controllers/compressImageController.dart';
 import 'package:image_compressor/controllers/themeController.dart';
-import 'package:image_compressor/models/compressImageModel.dart';
 
 class Homepage extends StatefulWidget {
   const Homepage({super.key});
@@ -53,6 +52,7 @@ class _HomepageState extends State<Homepage> with TickerProviderStateMixin {
 
   ImageController imageController = Get.put(ImageController());
   ThemeController themeController = Get.find<ThemeController>();
+  RxDouble _currentSliderValue = (100.0).obs;
 
   @override
   void dispose() {
@@ -221,56 +221,56 @@ class _HomepageState extends State<Homepage> with TickerProviderStateMixin {
     );
   }
 
-  //region METHOD FOR TAB VIEW
+  //region WIDGET FOR TAB BAR
   Widget _buildTabView(BuildContext context, ImageController imageController) {
     return Column(
       children: [
         // Tab Bar
         Container(
-          height: 52,
-          decoration: BoxDecoration(
-            border: Border(
-              bottom: BorderSide(
-                color: Theme.of(context).colorScheme.secondary.withOpacity(0.1),
-              )
-            ),
-            color: Theme.of(context).colorScheme.surface,
-            borderRadius: BorderRadius.only(
-              topRight: Radius.circular(12),
-              topLeft: Radius.circular(12),
-            ),
-          ),
-          child: TabBar(
-            indicatorWeight: 0,
-            padding: EdgeInsets.all(0),
-            indicatorPadding: EdgeInsets.all(0),
-            dividerHeight: 0,
-            controller: _tabController,
-            indicator: BoxDecoration(
-              borderRadius: BorderRadius.circular(12),
-              color: Theme.of(context).colorScheme.primary.withOpacity(0.2),
-              border: Border.all(
-                color: Theme.of(context).colorScheme.primary.withOpacity(0.2),
-                width: 1,
+            height: 52,
+            decoration: BoxDecoration(
+              border: Border(
+                bottom: BorderSide(
+                  color: Theme.of(context).colorScheme.secondary.withOpacity(0.1),
+                )
+              ),
+              color: Theme.of(context).colorScheme.surface,
+              borderRadius: BorderRadius.only(
+                topRight: Radius.circular(12),
+                topLeft: Radius.circular(12),
               ),
             ),
-            indicatorSize: TabBarIndicatorSize.tab,
-            labelColor:Theme.of(context).colorScheme.onBackground,
-            unselectedLabelColor: Theme.of(context).colorScheme.onBackground.withOpacity(0.6),
-            labelStyle: const TextStyle(
-              fontWeight: FontWeight.w600,
-              fontSize: 14,
+            child: TabBar(
+              indicatorWeight: 0,
+              padding: EdgeInsets.all(0),
+              indicatorPadding: EdgeInsets.all(0),
+              dividerHeight: 0,
+              controller: _tabController,
+              indicator: BoxDecoration(
+                borderRadius: BorderRadius.circular(12),
+                color: Theme.of(context).colorScheme.primary.withOpacity(0.2),
+                border: Border.all(
+                  color: Theme.of(context).colorScheme.primary.withOpacity(0.2),
+                  width: 1,
+                ),
+              ),
+              indicatorSize: TabBarIndicatorSize.tab,
+              labelColor:Theme.of(context).colorScheme.onBackground,
+              unselectedLabelColor: Theme.of(context).colorScheme.onBackground.withOpacity(0.6),
+              labelStyle: const TextStyle(
+                fontWeight: FontWeight.w600,
+                fontSize: 14,
+              ),
+              unselectedLabelStyle: const TextStyle(
+                fontWeight: FontWeight.w500,
+                fontSize: 14,
+              ),
+              tabs: const [
+                Tab(icon: Icon(Icons.compress, size: 18), text: 'Compress'),
+                Tab(icon: Icon(Icons.tune, size: 18), text: 'Advanced'),
+              ],
             ),
-            unselectedLabelStyle: const TextStyle(
-              fontWeight: FontWeight.w500,
-              fontSize: 14,
-            ),
-            tabs: const [
-              Tab(icon: Icon(Icons.compress, size: 18), text: 'Compress'),
-              Tab(icon: Icon(Icons.tune, size: 18), text: 'Advanced'),
-            ],
           ),
-        ),
         // Tab Content
         Expanded(
           child: TabBarView(
@@ -284,12 +284,14 @@ class _HomepageState extends State<Homepage> with TickerProviderStateMixin {
       ],
     );
   }
+  //endregion
 
-  // Compress Tab Content
+
+  //region  WIDGET FOR COMPRESS TAB
   Widget _buildCompressTab(
-    BuildContext context,
-    ImageController imageController,
-  ) {
+      BuildContext context,
+      ImageController imageController,
+      ) {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -299,176 +301,312 @@ class _HomepageState extends State<Homepage> with TickerProviderStateMixin {
           bottomLeft: Radius.circular(16),
         ),
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'Choose Compression Size',
-            style: TextStyle(
-              color: Theme.of(context).colorScheme.onBackground,
-              fontSize: 18,
-              fontWeight: FontWeight.w700,
-            ),
-          ),
-          const SizedBox(height: 16),
+      child: Obx(() {
+        bool allCompressed = imageController.shouldDisableCompressionButtons();
+        bool hasCompressedImages = imageController.getCompressList().isNotEmpty;
+        Map<String, int> status = imageController.getCompressionStatus();
 
-          // Compression buttons
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              _buildCompressionButton(
-                context,
-                '100 KB',
-                Icons.compress,
-                () => imageController.compressToTargetSize(100),
-              ),
-              _buildCompressionButton(
-                context,
-                '200 KB',
-                Icons.compress,
-                () => imageController.compressToTargetSize(200),
-              ),
-              _buildCompressionButton(
-                context,
-                '500 KB',
-                Icons.compress,
-                () => imageController.compressToTargetSize(500),
-              ),
-              _buildCompressionButton(
-                context,
-                '1 MB',
-                Icons.compress,
-                () => imageController.compressToTargetSize(1000),
-              ),
-            ],
-          ),
-
-          const SizedBox(height: 10),
-
-          // Custom compression option
-          Container(
-            width: double.infinity,
-            padding: const EdgeInsets.all(5),
-            decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(
-                color: Theme.of(
-                  context,
-                ).colorScheme.primary.withOpacity(0.3),
-              ),
-            ),
-            child: Column(
-              children: [
-                Icon(
-                  Icons.download_sharp,
-                  color: Theme.of(context).colorScheme.primary,
-                  size: 20,
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  // Advanced Tab Content
-  Widget _buildAdvancedTab(BuildContext context) {
-    return Stack(
-      children: [
-        Container(
-          width: double.infinity,
-          padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.surface,
-            borderRadius: BorderRadius.only(
-              bottomLeft: Radius.circular(16),
-              bottomRight: Radius.circular(16),
-            ),
-            border: BoxBorder.fromLTRB(
-              left: BorderSide(
-                color: Theme.of(context).colorScheme.primary.withOpacity(0.5),
-                width: 1,
-              ),
-              bottom: BorderSide(
-                color: Theme.of(context).colorScheme.primary.withOpacity(0.5),
-                width: 1,
-              ),
-              right: BorderSide(
-                color: Theme.of(context).colorScheme.primary.withOpacity(0.5),
-                width: 1,
-              ),
-            ),
-          ),
+        return SingleChildScrollView(
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Icon(
-                Icons.construction,
-                color: Theme.of(context).colorScheme.primary,
-                size: 48,
+              // Status header
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    'Choose Compression Size',
+                    style: TextStyle(
+                      color: Theme.of(context).colorScheme.onBackground,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                  if (status['total']! > 0)
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: allCompressed
+                            ? Colors.green.withOpacity(0.1)
+                            : Theme.of(context).colorScheme.primary.withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(
+                          color: allCompressed
+                              ? Colors.green.withOpacity(0.3)
+                              : Theme.of(context).colorScheme.primary.withOpacity(0.3),
+                        ),
+                      ),
+                      child: Text(
+                        allCompressed
+                            ? 'All Compressed ✓'
+                            : '${status['uncompressed']}/${status['total']} pending',
+                        style: TextStyle(
+                          color: allCompressed
+                              ? Colors.green
+                              : Theme.of(context).colorScheme.primary,
+                          fontSize: 8,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                ],
               ),
+          
               const SizedBox(height: 16),
-              Text(
-                'Advanced Settings',
-                style: TextStyle(
-                  color: Theme.of(context).colorScheme.onBackground,
-                  fontSize: 18,
-                  fontWeight: FontWeight.w700,
-                ),
+          
+              // Compression buttons
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  _buildCompressionButton(
+                    context,
+                    '100 KB',
+                    Icons.compress,
+                    allCompressed ? null : () {
+                      imageController.compressToTargetSize(100);
+                      // imageController.clearOriginalList();
+                      },
+                    isDisabled: allCompressed,
+                  ),
+                  _buildCompressionButton(
+                    context,
+                    '200 KB',
+                    Icons.compress,
+                    allCompressed ? null : () => imageController.compressToTargetSize(200),
+                    isDisabled: allCompressed,
+                  ),
+                  _buildCompressionButton(
+                    context,
+                    '500 KB',
+                    Icons.compress,
+                    allCompressed ? null : () => imageController.compressToTargetSize(500),
+                    isDisabled: allCompressed,
+                  ),
+                  _buildCompressionButton(
+                    context,
+                    'Custom',
+                    Icons.edit,
+                    allCompressed ? null : () => _showCustomSizeDialog(context),
+                    isDisabled: allCompressed,
+                  ),
+          
+                ],
               ),
-              const SizedBox(height: 8),
-              Text(
-                'Coming Soon',
-                style: TextStyle(
-                  color: Theme.of(context).colorScheme.onSurface,
-                  fontSize: 14,
-                ),
+              const SizedBox(height: 12),
+          
+              // Download section
+              Row(
+                mainAxisSize: MainAxisSize.max,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Expanded(
+                    child: GestureDetector(
+                      onTap: hasCompressedImages ? () => imageController.downloadImages() : null,
+                      child: Container(
+                        padding: const EdgeInsets.all(7),
+                        decoration: BoxDecoration(
+                          color: hasCompressedImages
+                              ? Theme.of(context).colorScheme.primary.withOpacity(0.1)
+                              : Theme.of(context).colorScheme.surface,
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(
+                            color: hasCompressedImages
+                                ? Theme.of(context).colorScheme.primary.withOpacity(0.3)
+                                : Theme.of(context).colorScheme.outline.withOpacity(0.3),
+                          ),
+                        ),
+                        child: Column(
+                          children: [
+                            Icon(
+                              Icons.save_alt_rounded,
+                              color: hasCompressedImages
+                                  ? Theme.of(context).colorScheme.primary
+                                  : Theme.of(context).colorScheme.outline.withOpacity(0.5),
+                              size: 20,
+                            ),
+                            Text(
+                              'Download',
+                              style: TextStyle(
+                                color: hasCompressedImages
+                                    ? Theme.of(context).colorScheme.primary
+                                    : Theme.of(context).colorScheme.outline.withOpacity(0.5),
+                                fontWeight: FontWeight.w500,
+                                fontSize: 12,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: GestureDetector(
+                      onTap: hasCompressedImages ? () {
+                        imageController.shareImages(
+                          imageController.getCompressList(),
+                        );
+                      } : null,
+                      child: Container(
+                        padding: const EdgeInsets.all(7),
+                        decoration: BoxDecoration(
+                          color: hasCompressedImages
+                              ? Theme.of(context).colorScheme.secondary.withOpacity(0.9)
+                              : Theme.of(context).colorScheme.surface,
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(
+                            color: hasCompressedImages
+                                ? Theme.of(context).colorScheme.secondary.withOpacity(0.9)
+                                : Theme.of(context).colorScheme.outline.withOpacity(0.3),
+                          ),
+                        ),
+                        child: Column(
+                          children: [
+                            Icon(
+                              Icons.share_rounded,
+                              color: hasCompressedImages
+                                  ? Theme.of(context).colorScheme.onBackground
+                                  : Theme.of(context).colorScheme.outline.withOpacity(0.5),
+                              size: 20,
+                            ),
+                            Text(
+                              'Share',
+                              style: TextStyle(
+                                color: hasCompressedImages
+                                    ? Theme.of(context).colorScheme.onBackground
+                                    : Theme.of(context).colorScheme.outline.withOpacity(0.5),
+                                fontWeight: FontWeight.w500,
+                                fontSize: 12,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ],
           ),
-        ),
-        Positioned(
-          top: 0,
-          left: 0,
-          child: Container(
-            height: 1,
-            width: MediaQuery.of(context).size.width / 2 - 15,
-            color: Theme.of(context).colorScheme.primary.withOpacity(0.5),
-          ),
-        ),
-      ],
+        );
+      }),
     );
   }
+  //endregion
 
-  // Helper method for compression buttons
+  //region METHOD FOR CUSTOM DILOG
+  void _showCustomSizeDialog(BuildContext context) {
+    final TextEditingController sizeController = TextEditingController();
+    final GlobalKey<FormState> formKey = GlobalKey<FormState>();
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Custom Compression Size'),
+          content: SingleChildScrollView(
+            child: Form(
+              key: formKey,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text('Enter the target size for image compression:'),
+                  const SizedBox(height: 16),
+                  TextFormField(
+                    
+                    controller: sizeController,
+                    keyboardType: TextInputType.number,
+                    decoration: const InputDecoration(
+                      labelText: 'Target Size (KB)',
+                      border: OutlineInputBorder(),
+                      hintText: 'e.g., 1000',
+                      suffixText: 'KB',
+                    ),
+                    validator: (value) {
+                      if (value == null || value.trim().isEmpty) {
+                        return 'Please enter a size';
+                      }
+                      final int? size = int.tryParse(value.trim());
+                      if (size == null || size <= 0) {
+                        return 'Please enter a valid positive number';
+                      }
+                      return null;
+                    },
+                    autofocus: true,
+                  ),
+                ],
+              ),
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text('Cancel'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                if (formKey.currentState!.validate()) {
+                  final int targetSize = int.parse(sizeController.text.trim());
+                  Navigator.of(context).pop();
+                  imageController.compressToTargetSize(targetSize);
+                }
+              },
+              child: const Text('OK'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+  //endregion
+
+
+  //region WIDGET FOR COMPRESSION BUTTON
   Widget _buildCompressionButton(
-    BuildContext context,
-    String label,
-    IconData icon,
-    VoidCallback onTap,
-  ) {
+      BuildContext context,
+      String label,
+      IconData icon,
+      VoidCallback? onTap, {
+        bool isDisabled = false,
+      }) {
     return GestureDetector(
-      onTap: onTap,
+      onTap: isDisabled ? null : onTap,
       child: Container(
         height: 55,
         width: 70,
         decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.primary,
+          color: isDisabled
+              ? Theme.of(context).colorScheme.surface
+              : Theme.of(context).colorScheme.primary,
           borderRadius: BorderRadius.circular(10),
-
+          border: isDisabled
+              ? Border.all(
+            color: Theme.of(context).colorScheme.outline.withOpacity(0.3),
+          )
+              : null,
         ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(icon, color: Colors.white, size: 20),
+            Icon(
+              icon,
+              color: isDisabled
+                  ? Theme.of(context).colorScheme.outline.withOpacity(0.5)
+                  : Colors.white,
+              size: 20,
+            ),
             const SizedBox(height: 4),
             Text(
               label,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 12,
                 fontWeight: FontWeight.w600,
-                color: Colors.white,
+                color: isDisabled
+                    ? Theme.of(context).colorScheme.outline.withOpacity(0.5)
+                    : Colors.white,
               ),
             ),
           ],
@@ -477,6 +615,193 @@ class _HomepageState extends State<Homepage> with TickerProviderStateMixin {
     );
   }
   //endregion
+
+  //region WIDGET FOR ADVANCE TAB
+  Widget _buildAdvancedTab(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.surface,
+        borderRadius: const BorderRadius.only(
+          bottomLeft: Radius.circular(16),
+          bottomRight: Radius.circular(16),
+        ),
+      ),
+      child: Obx(() {
+        // Move all reactive variables to the single Obx scope
+        bool allCompressed = imageController.shouldDisableCompressionButtons();
+        bool hasCompressedImages = imageController.getCompressList().isNotEmpty;
+        Map<String, int> status = imageController.getCompressionStatus();
+
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Choose Compression Quality',
+              style: TextStyle(
+                color: Theme.of(context).colorScheme.onBackground,
+                fontSize: 16,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+            const SizedBox(height: 4),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text("${_currentSliderValue.value.toStringAsFixed(0)}%",style: TextStyle(fontSize: 14,fontWeight: FontWeight.w500),),
+                Expanded(
+                  child: Slider(
+                    activeColor: Theme.of(context).colorScheme.primary,
+                    year2023: false,
+                    label: _currentSliderValue.value.toString(),
+                    allowedInteraction: SliderInteraction.slideThumb,
+                    // Removed deprecated year2023 property
+                    max: 100,
+                    min: 0,
+                    divisions: 10,
+                    inactiveColor: Theme.of(context).colorScheme.primary.withOpacity(0.2),
+                    thumbColor: Theme.of(context).colorScheme.primary,
+                    value: _currentSliderValue.value,
+                    onChanged: (value) {
+                      _currentSliderValue.value = value;
+                    },
+                  ),
+                ),
+              ],
+            ),
+            SizedBox(height: 8,),
+            GestureDetector(
+              onTap: () {
+                imageController.compressToTargetQuality(_currentSliderValue.value.toInt());
+              },
+              child: Center(
+                child: Container(
+                  height: 40,
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                    color:Theme.of(context).colorScheme.primary,
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        Icons.compress,
+                        color: Colors.white,
+                        size: 20,
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        'Compress',
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(height: 12), // Added spacing
+            Row(
+              mainAxisSize: MainAxisSize.max,
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                GestureDetector(
+                  onTap: hasCompressedImages ? () => imageController.downloadImages() : null,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 25,vertical: 4),
+                    decoration: BoxDecoration(
+                      color: hasCompressedImages
+                          ? Theme.of(context).colorScheme.primary.withOpacity(0.1)
+                          : Theme.of(context).colorScheme.surface,
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(
+                        color: hasCompressedImages
+                            ? Theme.of(context).colorScheme.primary.withOpacity(0.3)
+                            : Theme.of(context).colorScheme.outline.withOpacity(0.3),
+                      ),
+                    ),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.save_alt_rounded,
+                          color: hasCompressedImages
+                              ? Theme.of(context).colorScheme.primary
+                              : Theme.of(context).colorScheme.outline.withOpacity(0.5),
+                          size: 20,
+                        ),
+                        Text(
+                          'Download',
+                          style: TextStyle(
+                            color: hasCompressedImages
+                                ? Theme.of(context).colorScheme.primary
+                                : Theme.of(context).colorScheme.outline.withOpacity(0.5),
+                            fontWeight: FontWeight.w500,
+                            fontSize: 12,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                GestureDetector(
+                  onTap: hasCompressedImages ? () {
+                    imageController.shareImages(
+                      imageController.getCompressList(),
+                    );
+                  } : null,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 37,vertical: 4),
+                    decoration: BoxDecoration(
+                      color: hasCompressedImages
+                          ? Theme.of(context).colorScheme.primary.withOpacity(0.1)
+                          : Theme.of(context).colorScheme.surface,
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(
+                        color: hasCompressedImages
+                            ? Theme.of(context).colorScheme.primary.withOpacity(0.3)
+                            : Theme.of(context).colorScheme.outline.withOpacity(0.3),
+                      ),
+                    ),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.share_rounded,
+                          color: hasCompressedImages
+                              ? Theme.of(context).colorScheme.primary
+                              : Theme.of(context).colorScheme.outline.withOpacity(0.5),
+                          size: 20,
+                        ),
+                        Text(
+                          'Share',
+                          style: TextStyle(
+                            color: hasCompressedImages
+                                ? Theme.of(context).colorScheme.primary
+                                : Theme.of(context).colorScheme.outline.withOpacity(0.5),
+                            fontWeight: FontWeight.w500,
+                            fontSize: 12,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        );
+      }),
+    );
+  }
+  //endregion
+
+
   ///////////////////////////////////////////////enable this region for Header/////////////////////
   //region METHOD FOR HEADING
   // Widget _buildHeader(BuildContext context) {
@@ -655,32 +980,6 @@ class _HomepageState extends State<Homepage> with TickerProviderStateMixin {
                 ),
               ),
             ),
-
-            SizedBox(width: 5),
-
-            if (hasCompressImage.value)
-              GestureDetector(
-                onTap: () {
-                  imageController.shareImages(
-                    imageController.getCompressList(),
-                  );
-                },
-                child: Container(
-                  height: 30,
-                  width: 30,
-                  decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.onBackground,
-                    borderRadius: BorderRadius.all(Radius.circular(25)),
-                  ),
-                  child: Center(
-                    child: Icon(
-                      Icons.share,
-                      size: 20,
-                      color: Theme.of(context).colorScheme.primary,
-                    ),
-                  ),
-                ),
-              ),
           ],
         ),
         // Images display
@@ -911,6 +1210,6 @@ class _HomepageState extends State<Homepage> with TickerProviderStateMixin {
       ),
     );
   }
-
   //endregion
 }
+

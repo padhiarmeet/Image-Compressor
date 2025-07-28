@@ -14,6 +14,9 @@ class ImageController{
   void removeOriginalImage(CompressedImage image) {
     _imageModel.removeOriginalImage(image);
   }
+  void clearOriginalList() {
+    _imageModel.clearOriginalList();
+  }
   RxList<CompressedImage> getOriginalList() =>_imageModel.getOriginalImages().obs;
   //endregion
 
@@ -24,12 +27,31 @@ class ImageController{
   void removeCompressImage(CompressedImage image) {
     _imageModel.removeCompressImage(image);
   }
+
+  void clearCompressList() {
+    _imageModel.clearCompressedList();
+  }
   RxList<CompressedImage> getCompressList() =>_imageModel.getCompressImages().obs;
   //endregion
 
   //region Methods to clear all Lists
   void clearImages(){
     _imageModel.clearAll();
+  }
+  //endregion
+
+  //region New methods for compression state tracking
+  bool areAllImagesCompressed() {
+    return _imageModel.areAllImagesCompressed();
+  }
+
+  Map<String, int> getCompressionStatus() {
+    return _imageModel.getCompressionStatus();
+  }
+
+  // Method to check if compression buttons should be disabled
+  bool shouldDisableCompressionButtons() {
+    return areAllImagesCompressed();
   }
   //endregion
 
@@ -45,8 +67,16 @@ class ImageController{
     await _imageModel.compressToTargetSize(size);
   }
 
+  Future<void> compressToTargetQuality(int quality) async{
+    await _imageModel.compressToTargetQuality(quality);
+  }
+
   Future<void> shareImages(List<CompressedImage> data) async{
     await _imageModel.shareImages(data);
+  }
+
+  Future<void> downloadImages() async {
+    await _imageModel.downloadImages();
   }
 
 }

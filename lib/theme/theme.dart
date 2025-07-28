@@ -35,16 +35,16 @@ ThemeData lightMode = ThemeData(
   colorScheme: const ColorScheme.light(
     // Main background - Clean neutral with warmth
     // background: Color(0xFFFBFBFB),
-        background: Color(0xfff2f5f8),
+    background: Color(0xfff2f5f8),
     // Surface colors - Pure white and light variations
     surface: Color(0xFFFFFFFF),
     //   surface: Color(0xffe3f6fb),
     // Primary brand color - Professional teal - 488FB1
     // primary: Color(0xff438A70),
-      primary: Color(0xFF0079bf),
+    primary: Color(0xFF0079bf),
     // Secondary accent - Complementary orange
     // secondary: Color(0xFFF97316),
-      secondary: Color(0xFF5ba4cf),
+    secondary: Color(0xFF5ba4cf),
     // Text colors
     onBackground: Color(0xFF0F172A),
     onSurface: Color(0xFF475569),
@@ -111,15 +111,15 @@ ThemeData darkMode = ThemeData(
   colorScheme: const ColorScheme.dark(
     // Main background - Deep professional dark (0F172A)
     // background: Color(0xFF0F0D15),
-      background: Color(0xFF121212),
+    background: Color(0xFF121212),
 
     // Surface colors - Layered dark surfaces (1E293B)
     // surface: Color(0xFF1D1A26),
-      surface: Color(0xFF1E1E1E),
+    surface: Color(0xFF1E1E1E),
 
     // Primary brand color - Bright teal for dark mode (14B8A6)  60A5FA {{3B82F6}}
     // primary: Color(0xff1e95d4),
-        primary: Color(0xFF0079bf),
+    primary: Color(0xFF0079bf),
 
     // Secondary accent - Vibrant orange
     // secondary: Color(0xFFFB923C),

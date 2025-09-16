@@ -1,12 +1,15 @@
 import 'dart:io';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
+import 'package:image_compressor/controllers/database_controller.dart';
 import 'package:image_gallery_saver_plus/image_gallery_saver_plus.dart';
 import 'package:path_provider/path_provider.dart' as path_provider;
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:photo_manager/photo_manager.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:path/path.dart' as path;
 
 class CompressedImage {
   int? id;
@@ -35,7 +38,7 @@ class CompressedImage {
       'compressedSize': compressedSize,
       'compressedAt': compressedAt?.toIso8601String(),
       'format': format,
-      'isCompressed': isCompressed,
+      'isCompressed': isCompressed ? 1 : 0,
     };
   }
 
@@ -49,7 +52,7 @@ class CompressedImage {
           ? DateTime.parse(map['compressedAt'])
           : null,
       format: map['format'],
-      isCompressed: map['isCompressed'] ?? false,
+      isCompressed: (map['isCompressed'] == 1 ?true : false) ?? false,
     );
   }
 }
@@ -58,6 +61,8 @@ class ImageModel extends GetxController {
 
   final RxList<CompressedImage> _originalImages = <CompressedImage>[].obs;
   final RxList<CompressedImage> _compressImages = <CompressedImage>[].obs;
+
+  final databaseController = Get.find<DatabaseController>();
 
   //region Methods for Original Images
   void addOriginalImage(CompressedImage image) {
@@ -108,7 +113,7 @@ class ImageModel extends GetxController {
 
   // New method to check if all images are already compressed
   bool areAllImagesCompressed() {
-    if (_originalImages.isEmpty) return false;
+    // if (_originalImages.isEmpty) return false;
     return _originalImages.every((image) => image.isCompressed);
   }
 
@@ -216,16 +221,16 @@ class ImageModel extends GetxController {
         final compressedBytes = await compressedFile.readAsBytes();
         final compressedSizeKB = compressedBytes.length / 1024;
 
-        _compressImages.add(
-          CompressedImage(
-            filePath: result.path,
-            originalSize: originalSizeKB,
-            compressedSize: compressedSizeKB,
-            compressedAt: DateTime.now(),
-            format: image.format,
-            isCompressed: true, // Mark as compressed
-          ),
+        var oneImage = CompressedImage(
+          filePath: result.path,
+          originalSize: originalSizeKB,
+          compressedSize: compressedSizeKB,
+          compressedAt: DateTime.now(),
+          format: image.format,
+          isCompressed: true, // Mark as compressed
         );
+
+        _compressImages.add(oneImage);
 
         // Mark the original image as compressed
         image.isCompressed = true;
@@ -299,16 +304,18 @@ class ImageModel extends GetxController {
         final compressedBytes = await compressedFile.readAsBytes();
         final compressedSizeKB = compressedBytes.length / 1024;
 
-        _compressImages.add(
-          CompressedImage(
-            filePath: result.path,
-            originalSize: await originalFile.length() / 1024,
-            compressedSize: compressedSizeKB,
-            compressedAt: DateTime.now(),
-            format: image.format,
-            isCompressed: true, // Mark as compressed
-          ),
+        print("FilePath : ${result.path}, \noriginalSize : ${await originalFile.length() / 1024} \ncompressedSize: $compressedSizeKB\ncompressedAt: ${DateTime.now()}\nformat: ${image.format}");
+
+        var oneImage =  CompressedImage(
+          filePath: result.path,
+          originalSize: await originalFile.length() / 1024,
+          compressedSize: compressedSizeKB,
+          compressedAt: DateTime.now(),
+          format: image.format,
+          isCompressed: true, // Mark as compressed
         );
+
+        _compressImages.add(oneImage);
 
         // Mark the original image as compressed
         image.isCompressed = true;
@@ -376,16 +383,18 @@ class ImageModel extends GetxController {
         final compressedBytes = await compressedFile.readAsBytes();
         final compressedSizeKB = compressedBytes.length / 1024;
 
-        _compressImages.add(
-          CompressedImage(
-            filePath: result.path,
-            originalSize: await originalFile.length() / 1024,
-            compressedSize: compressedSizeKB,
-            compressedAt: DateTime.now(),
-            format: image.format,
-            isCompressed: true, // Mark as compressed
-          ),
+        var oneImage =  CompressedImage(
+          filePath: result.path,
+          originalSize: await originalFile.length() / 1024,
+          compressedSize: compressedSizeKB,
+          compressedAt: DateTime.now(),
+          format: image.format,
+          isCompressed: true, // Mark as compressed
         );
+
+        _compressImages.add(oneImage);
+
+        await databaseController.addImage(oneImage);
 
         // Mark the original image as compressed
         image.isCompressed = true;
@@ -401,7 +410,7 @@ class ImageModel extends GetxController {
   }
   //endregion
 
-  //region METHOD FOR DOWNLOADING IMAGES TO GALLERY
+  //region METHOD FOR DOWNLOADING MULTIPLE IMAGES TO GALLERY
   Future<void> downloadImages() async {
     if (_compressImages.isEmpty) {
       Get.snackbar(
@@ -432,11 +441,32 @@ class ImageModel extends GetxController {
       int failCount = 0;
 
       for (var image in _compressImages) {
-        final file = File(image.filePath);
+        File? file;
+
+        if (image.filePath.startsWith('content://')) {
+          try {
+            final id = image.filePath.split("/").last;
+            final asset = await AssetEntity.fromId(id);
+            file = await asset?.file;
+          } catch (e) {
+            debugPrint("Error resolving content URI: $e");
+            failCount++;
+            continue;
+          }
+        } else {
+          file = File(image.filePath);
+        }
+
+        if (file == null || !(await file.exists())) {
+          failCount++;
+          continue;
+        }
+
         final bytes = await file.readAsBytes();
 
         // Generate a unique filename
-        final fileName = 'compressed_${DateTime.now().millisecondsSinceEpoch}.${image.format}';
+        final fileName =
+            'compressed_${DateTime.now().millisecondsSinceEpoch}.${image.format}';
 
         final result = await ImageGallerySaverPlus.saveImage(
           bytes,
@@ -445,11 +475,15 @@ class ImageModel extends GetxController {
         );
 
         if (result['isSuccess'] == true) {
+          Map<String, dynamic> newData = image.toMap();
+          newData['filePath'] = result['filePath'];
+          await databaseController.addImage(CompressedImage.fromMap(newData));
           successCount++;
         } else {
           failCount++;
         }
       }
+
 
       if (successCount > 0) {
         Get.snackbar(
@@ -469,6 +503,7 @@ class ImageModel extends GetxController {
         );
       }
     } catch (e) {
+      print(e);
       Get.snackbar(
         'Error',
         'Failed to download images: $e',
@@ -480,7 +515,85 @@ class ImageModel extends GetxController {
   }
   //endregion
 
-  //region METHOD FOR SHARING IMAGES
+  //region METHOD FOR DOWNLOADING IMAGE TO GALLERY {HISTORY PAGE}
+  Future<void> downloadImage(String filePath) async {
+    // Request storage permission
+    PermissionStatus status = await Permission.photos.request();
+    if (status.isDenied || status.isPermanentlyDenied) {
+      Get.snackbar(
+        'Storage Permission Required',
+        'Permission is denied. Please enable storage permission in settings.',
+        backgroundColor: Colors.red[300],
+        colorText: Colors.black,
+        snackPosition: SnackPosition.BOTTOM,
+      );
+      return;
+    }
+
+    try {
+      File? file;
+
+
+      if (filePath.startsWith('content://')) {
+        final id = filePath.split("/").last;
+        final asset = await AssetEntity.fromId(id);
+        file = await asset?.file;
+      } else {
+        file = File(filePath);
+      }
+
+      if (file == null || !(await file.exists())) {
+        Get.snackbar(
+          'Error',
+          'File not found!',
+          backgroundColor: Colors.red[300],
+          colorText: Colors.black,
+          snackPosition: SnackPosition.BOTTOM,
+        );
+        return;
+      }
+
+      final bytes = await file.readAsBytes();
+
+      final fileName =
+          'compressed_${DateTime.now().millisecondsSinceEpoch}${path.extension(file.path)}';
+
+      final result = await ImageGallerySaverPlus.saveImage(
+        bytes,
+        name: fileName,
+        quality: 100,
+      );
+
+      if (result['isSuccess']) {
+        Get.snackbar(
+          'Download Complete',
+          'Image saved to gallery successfully!',
+          backgroundColor: Colors.green[300],
+          colorText: Colors.black,
+          snackPosition: SnackPosition.BOTTOM,
+        );
+      } else {
+        Get.snackbar(
+          'Download Failed',
+          'Failed to save image to gallery',
+          backgroundColor: Colors.red[300],
+          colorText: Colors.black,
+          snackPosition: SnackPosition.BOTTOM,
+        );
+      }
+    } catch (e) {
+      Get.snackbar(
+        'Error',
+        'Failed to download image: $e',
+        backgroundColor: Colors.red[300],
+        colorText: Colors.black,
+        snackPosition: SnackPosition.BOTTOM,
+      );
+    }
+  }
+  //endregion
+
+  //region METHOD FOR SHARING MULTIPLE IMAGES
   Future<void> shareImages(List<CompressedImage> files) async {
     final List<XFile> xFiles = files.map((file) => XFile(file.filePath)).toList();
 
@@ -494,5 +607,46 @@ class ImageModel extends GetxController {
       Get.snackbar('Success','Image shared successfully !',snackPosition: SnackPosition.BOTTOM);
     }
   }
+  //endregion
+
+  //region METHOD FOR SHARING ONE IMAGES {HISTORY PAGE}
+  Future<void> shareImage(String filePath) async {
+    File? file;
+
+    if (filePath.startsWith('content://')) {
+      try {
+        final id = filePath.split("/").last;
+        final asset = await AssetEntity.fromId(id);
+        file = await asset?.file;
+      } catch (e) {
+        debugPrint("Error resolving content URI for sharing: $e");
+        Get.snackbar('Error', 'Unable to share this file',
+            snackPosition: SnackPosition.BOTTOM);
+        return;
+      }
+    } else {
+      file = File(filePath);
+    }
+
+    if (file == null || !(await file.exists())) {
+      Get.snackbar('Error', 'File not found',
+          snackPosition: SnackPosition.BOTTOM);
+      return;
+    }
+
+    final xfile = XFile(file.path);
+
+    final params = ShareParams(
+      files: [xfile],
+    );
+
+    final shareResult = await SharePlus.instance.share(params);
+
+    if (shareResult.status == ShareResultStatus.success) {
+      Get.snackbar('Success', 'Image shared successfully!',
+          snackPosition: SnackPosition.BOTTOM);
+    }
+  }
+
 //endregion
 }

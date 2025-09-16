@@ -1,9 +1,9 @@
-import 'dart:io';
+
 
 import 'package:get/get.dart';
 import 'package:image_compressor/models/compressImageModel.dart';
 
-class ImageController{
+class ImageController extends GetxController{
 
   ImageModel _imageModel = ImageModel();
 
@@ -11,7 +11,7 @@ class ImageController{
   void addOriginalImage(CompressedImage image){
     _imageModel.addOriginalImage(image);
   }
-  void removeOriginalImage(CompressedImage image) {
+  void removeOriginalImage(CompressedImage image){
     _imageModel.removeOriginalImage(image);
   }
   void clearOriginalList() {
@@ -40,7 +40,7 @@ class ImageController{
   }
   //endregion
 
-  //region New methods for compression state tracking
+  //region Methods for compression state tracking
   bool areAllImagesCompressed() {
     return _imageModel.areAllImagesCompressed();
   }
@@ -75,8 +75,15 @@ class ImageController{
     await _imageModel.shareImages(data);
   }
 
+  Future<void> shareImage(String filePath) async{
+    await _imageModel.shareImage(filePath);
+  }
+
   Future<void> downloadImages() async {
     await _imageModel.downloadImages();
   }
 
+  Future<void> downloadImage(String filePath) async {
+    await _imageModel.downloadImage(filePath);
+  }
 }

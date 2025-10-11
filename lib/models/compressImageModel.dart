@@ -155,7 +155,7 @@ class ImageModel extends GetxController {
       Get.bottomSheet(
         Container(
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: theme.colorScheme.surface,
             borderRadius: BorderRadius.only(
               topLeft: Radius.circular(20),
               topRight: Radius.circular(20),
@@ -166,14 +166,15 @@ class ImageModel extends GetxController {
             mainAxisSize: MainAxisSize.min,
             children: [
               Text(
-                'Choose Image Source',
+                'Choose Image Source (Max 5 Images)',
                 style: TextStyle(
-                  fontSize: 18,
+                  fontSize: 16,
                   fontWeight: FontWeight.w600,
+                  color: theme.colorScheme.onSurface
                 ),
               ),
               SizedBox(height: 24),
-
+              //Buttons for selecting image sources
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
@@ -202,7 +203,7 @@ class ImageModel extends GetxController {
                         },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Get.theme.colorScheme.primary.withOpacity(0.1),
-                          shape: RoundedRectangleBorder(side: BorderSide(color: theme.primaryColor.withOpacity(0.3)),borderRadius: BorderRadiusGeometry.circular(12)),
+                          shape: RoundedRectangleBorder(side: BorderSide(color: theme.primaryColor.withOpacity(0.15)),borderRadius: BorderRadius.circular(12)),
                           padding: EdgeInsets.all(16),
                         ),
                         child: Icon(Icons.camera_alt_outlined, size: 28,color: theme.colorScheme.primary,),
@@ -221,7 +222,28 @@ class ImageModel extends GetxController {
                           final List<XFile> images = await picker.pickMultiImage();
 
                           if (images.isNotEmpty) {
-                            for (XFile oneImage in images) {
+                            const int maxImages = 5;
+                            List<XFile> selectedImages = images;
+
+                            // Check if more than 5 images were selected
+                            if (images.length > maxImages) {
+                              Get.back();
+                              selectedImages = images.take(maxImages).toList();
+                              print('YOUR IMAGE LIMIT IS ONY % YOU !!');
+
+                              // Show warning snackbar
+                              Get.snackbar(
+                                'Image Limit Exceeded',
+                                'Only the first $maxImages images have been selected',
+                                backgroundColor: Colors.orange[300],
+                                colorText: Colors.black,
+                                snackPosition: SnackPosition.BOTTOM,
+                                duration: Duration(seconds: 3),
+                              );
+                            }
+
+                            // Add selected images
+                            for (XFile oneImage in selectedImages) {
                               addOriginalImage(
                                 CompressedImage(
                                   filePath: oneImage.path,
@@ -233,13 +255,13 @@ class ImageModel extends GetxController {
                                 ),
                               );
                             }
-                            clearCompressedList();
                             Get.back();
+                            clearCompressedList();
                           }
                         },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Get.theme.colorScheme.primary.withOpacity(0.1),
-                          shape: RoundedRectangleBorder(side: BorderSide(color: theme.primaryColor.withOpacity(0.3)),borderRadius: BorderRadiusGeometry.circular(12)),
+                          shape: RoundedRectangleBorder(side: BorderSide(color: theme.primaryColor.withOpacity(0.15)),borderRadius: BorderRadius.circular(12)),
                           padding: EdgeInsets.all(16),
                         ),
                         child: Icon(Icons.image_outlined, size: 28,color: theme.colorScheme.primary,),
@@ -251,11 +273,20 @@ class ImageModel extends GetxController {
                 ],
               ),
               SizedBox(height: 16),
+              Text(
+                '* You can increase the image limit by watching an Ad',
+                style: TextStyle(
+                  fontSize: 12,
+                  color: theme.colorScheme.onTertiary.withOpacity(0.6),
+                ),
+                textAlign: TextAlign.center,
+              ),
             ],
           ),
         ),
         backgroundColor: Colors.transparent,
       );
+
     }
   }
   //endregion

@@ -149,24 +149,113 @@ class ImageModel extends GetxController {
     }
 
     if (status.isGranted) {
-      final List<XFile> images = await picker.pickMultiImage();
 
-      //region Add Image in Original List
-      if (images.isNotEmpty) {
-        for (XFile oneImage in images) {
-          addOriginalImage(
-            CompressedImage(
-              filePath: oneImage.path,
-              originalSize: await oneImage.length() / 1024,
-              compressedSize: 0,
-              compressedAt: DateTime.now(),
-              format: getImageFormat(oneImage.path),
-              isCompressed: false, // New images are not compressed
+      ThemeData theme = Get.theme;
+
+      Get.bottomSheet(
+        Container(
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(20),
+              topRight: Radius.circular(20),
             ),
-          );
-        }
-        clearCompressedList();
-      }
+          ),
+          padding: EdgeInsets.all(24),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                'Choose Image Source',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              SizedBox(height: 24),
+
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  // Camera Button
+                  Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      ElevatedButton(
+                        onPressed: () async {
+                          final XFile? pickedImage = await picker.pickImage(source: ImageSource.camera);
+
+                          if (pickedImage != null) {
+                            addOriginalImage(
+                              CompressedImage(
+                                filePath: pickedImage.path,
+                                originalSize: await pickedImage.length() / 1024,
+                                compressedSize: 0,
+                                compressedAt: DateTime.now(),
+                                format: getImageFormat(pickedImage.path),
+                                isCompressed: false,
+                              ),
+                            );
+                            clearCompressedList();
+                            Get.back();
+                          }
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Get.theme.colorScheme.primary.withOpacity(0.1),
+                          shape: RoundedRectangleBorder(side: BorderSide(color: theme.primaryColor.withOpacity(0.3)),borderRadius: BorderRadiusGeometry.circular(12)),
+                          padding: EdgeInsets.all(16),
+                        ),
+                        child: Icon(Icons.camera_alt_outlined, size: 28,color: theme.colorScheme.primary,),
+                      ),
+                      SizedBox(height: 8),
+                      Text('Camera', style: TextStyle(fontSize: 14)),
+                    ],
+                  ),
+
+                  // Gallery Button
+                  Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      ElevatedButton(
+                        onPressed: () async {
+                          final List<XFile> images = await picker.pickMultiImage();
+
+                          if (images.isNotEmpty) {
+                            for (XFile oneImage in images) {
+                              addOriginalImage(
+                                CompressedImage(
+                                  filePath: oneImage.path,
+                                  originalSize: await oneImage.length() / 1024,
+                                  compressedSize: 0,
+                                  compressedAt: DateTime.now(),
+                                  format: getImageFormat(oneImage.path),
+                                  isCompressed: false,
+                                ),
+                              );
+                            }
+                            clearCompressedList();
+                            Get.back();
+                          }
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Get.theme.colorScheme.primary.withOpacity(0.1),
+                          shape: RoundedRectangleBorder(side: BorderSide(color: theme.primaryColor.withOpacity(0.3)),borderRadius: BorderRadiusGeometry.circular(12)),
+                          padding: EdgeInsets.all(16),
+                        ),
+                        child: Icon(Icons.image_outlined, size: 28,color: theme.colorScheme.primary,),
+                      ),
+                      SizedBox(height: 8),
+                      Text('Gallery', style: TextStyle(fontSize: 14)),
+                    ],
+                  ),
+                ],
+              ),
+              SizedBox(height: 16),
+            ],
+          ),
+        ),
+        backgroundColor: Colors.transparent,
+      );
     }
   }
   //endregion

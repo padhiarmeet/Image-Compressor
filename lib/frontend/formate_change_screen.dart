@@ -631,7 +631,6 @@ class _ChangeFormatScreenState extends State<ChangeFormatScreen>
                   return Stack(
                     alignment: Alignment.center,
                     children: [
-                      // Image Display
                       SizedBox(
                         width: width * 7 / 8,
                         height: height / 2,

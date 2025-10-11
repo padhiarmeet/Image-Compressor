@@ -178,7 +178,6 @@ class PdfController extends GetxController{
   List<dynamic> getPdfList(){
     return pdfFiles;
   }
-
   void removePdf(int index){
 
     print(index);

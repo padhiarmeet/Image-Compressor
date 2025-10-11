@@ -132,11 +132,11 @@ class _PdfScreenState extends State<PdfScreen> with TickerProviderStateMixin {
                      ),
                    ),
 
-                    // Download Buttons (show only when PDFs are generated)
+                    // Download Buttons (only shows when PDFs are generated)
                     Padding(
                       padding: EdgeInsets.only(top: 12),
                       child: Obx(() {
-                        if (pdfController.hasPdf.value && pdfController.pdfFiles.isNotEmpty) {
+                        if (pdfController.hasPdf.value && pdfController.pdfFiles.isNotEmpty && imageController.getOriginalList().isNotEmpty) {
                           return Container(
                             margin: const EdgeInsets.symmetric(horizontal: 20),
                             child: Column(

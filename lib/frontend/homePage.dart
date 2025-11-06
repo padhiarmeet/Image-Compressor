@@ -6,6 +6,8 @@ import 'package:flutter_card_swiper/flutter_card_swiper.dart';
 import 'package:get/get.dart';
 import 'package:image_compressor/controllers/compressImageController.dart';
 
+import '../adMob/bannerAdWidget.dart';
+
 class Homepage extends StatefulWidget {
   const Homepage({super.key});
 
@@ -127,6 +129,10 @@ class _HomepageState extends State<Homepage> with TickerProviderStateMixin {
                 if (!hasOriginalImages.value && !hasCompressedImages.value) ...[
                   const SizedBox(height: 30),
                   _buildInstructions(context),
+                  Spacer(),
+                  Center(
+                      child: BannerAdWidget(adUnitId: "ca-app-pub-3940256099942544/6300978111")
+                  ),
                 ],
               ],
             );

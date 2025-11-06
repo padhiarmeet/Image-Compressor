@@ -42,6 +42,7 @@ dependencies:
   get_storage: ^2.1.1
   sqflite:
   dotted_border: ^3.1.0
+  google_mobile_ads:
   flutter:
     sdk: flutter
 

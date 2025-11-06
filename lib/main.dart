@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:get/get_navigation/src/root/get_material_app.dart';
 import 'package:get_storage/get_storage.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:image_compressor/controllers/database_controller.dart';
 import 'package:image_compressor/controllers/page_view_cntroller.dart';
 import 'package:image_compressor/frontend/layout_page_screen.dart';
@@ -11,7 +12,9 @@ import 'controllers/compressImageController.dart';
 import 'controllers/themeController.dart';
 
 void main() async{
+  WidgetsFlutterBinding.ensureInitialized();
   await GetStorage.init();
+  await MobileAds.instance.initialize();
   runApp(const MyApp());
 }
 

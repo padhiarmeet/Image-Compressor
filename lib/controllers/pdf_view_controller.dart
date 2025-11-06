@@ -49,15 +49,39 @@ class PdfController extends GetxController{
     try {
       isDownloading.value = true;
 
-      var status = await Permission.storage.request();
-      if (status.isDenied) {
+      if (!await pdfFile.exists()) {
         Get.snackbar(
-          "Permission Denied",
-          "Storage permission is required to download files",
+          "Error",
+          "Source PDF not found: ${pdfFile.path}",
           snackPosition: SnackPosition.BOTTOM,
         );
         isDownloading.value = false;
         return;
+      }
+
+      var status = await Permission.storage.request();
+      if (!status.isGranted) {
+        // On newer Android versions storage permission may not be sufficient.
+        if (Platform.isAndroid) {
+          var manageStatus = await Permission.manageExternalStorage.request();
+          if (!manageStatus.isGranted) {
+            Get.snackbar(
+              "Permission Denied",
+              "Storage permission is required to download files",
+              snackPosition: SnackPosition.BOTTOM,
+            );
+            isDownloading.value = false;
+            return;
+          }
+        } else {
+          Get.snackbar(
+            "Permission Denied",
+            "Storage permission is required to download files",
+            snackPosition: SnackPosition.BOTTOM,
+          );
+          isDownloading.value = false;
+          return;
+        }
       }
 
       Directory? downloadsDirectory;
@@ -74,13 +98,20 @@ class PdfController extends GetxController{
         final fileName = pdfFile.path.split('/').last;
         final newPath = '${downloadsDirectory.path}/$fileName';
 
-        await pdfFile.copy(newPath);
-
-        Get.snackbar(
-          "Success",
-          "PDF downloaded to Downloads folder",
-          snackPosition: SnackPosition.BOTTOM,
-        );
+        try {
+          final copied = await pdfFile.copy(newPath);
+          Get.snackbar(
+            "Success",
+            "PDF downloaded to: ${copied.path}",
+            snackPosition: SnackPosition.BOTTOM,
+          );
+        } catch (e) {
+          Get.snackbar(
+            "Error",
+            "Failed to save PDF: $e",
+            snackPosition: SnackPosition.BOTTOM,
+          );
+        }
       }
     } catch (e) {
       Get.snackbar(
@@ -97,15 +128,38 @@ class PdfController extends GetxController{
     try {
       isDownloading.value = true;
 
-      var status = await Permission.storage.request();
-      if (status.isDenied) {
+      if (pdfFiles.isEmpty) {
         Get.snackbar(
-          "Permission Denied",
-          "Storage permission is required to download files",
+          "Info",
+          "No PDFs to download",
           snackPosition: SnackPosition.BOTTOM,
         );
         isDownloading.value = false;
         return;
+      }
+
+      var status = await Permission.storage.request();
+      if (!status.isGranted) {
+        if (Platform.isAndroid) {
+          var manageStatus = await Permission.manageExternalStorage.request();
+          if (!manageStatus.isGranted) {
+            Get.snackbar(
+              "Permission Denied",
+              "Storage permission is required to download files",
+              snackPosition: SnackPosition.BOTTOM,
+            );
+            isDownloading.value = false;
+            return;
+          }
+        } else {
+          Get.snackbar(
+            "Permission Denied",
+            "Storage permission is required to download files",
+            snackPosition: SnackPosition.BOTTOM,
+          );
+          isDownloading.value = false;
+          return;
+        }
       }
 
       Directory? downloadsDirectory;
@@ -120,17 +174,26 @@ class PdfController extends GetxController{
 
       if (downloadsDirectory != null) {
         int downloadCount = 0;
-        for (File pdfFile in pdfFiles) {
-          final fileName = pdfFile.path.split('/').last;
-          final newPath = '${downloadsDirectory.path}/$fileName';
-
-          await pdfFile.copy(newPath);
-          downloadCount++;
+        int failCount = 0;
+        for (var f in pdfFiles) {
+          try {
+            final File pdfFile = f as File;
+            if (!await pdfFile.exists()) {
+              failCount++;
+              continue;
+            }
+            final fileName = pdfFile.path.split('/').last;
+            final newPath = '${downloadsDirectory.path}/$fileName';
+            await pdfFile.copy(newPath);
+            downloadCount++;
+          } catch (e) {
+            failCount++;
+          }
         }
 
         Get.snackbar(
           "Success",
-          "$downloadCount PDFs downloaded to Downloads folder",
+          "$downloadCount PDFs downloaded. $failCount failed.",
           snackPosition: SnackPosition.BOTTOM,
         );
       }
@@ -183,7 +246,7 @@ class PdfController extends GetxController{
     print(index);
 
 
-    if (index >= 0 && index <= pdfFiles.length) {
+    if (index >= 0 && index < pdfFiles.length) {
       pdfFiles.removeAt(index);
       if (pdfFiles.isEmpty) {
         hasPdf.value = false;

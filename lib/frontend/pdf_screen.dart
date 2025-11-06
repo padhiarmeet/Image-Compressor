@@ -11,6 +11,8 @@ import 'package:path_provider/path_provider.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 
+import '../adMob/bannerAdWidget.dart';
+
 
 class PdfScreen extends StatefulWidget {
   const PdfScreen({super.key});
@@ -72,7 +74,12 @@ class _PdfScreenState extends State<PdfScreen> with TickerProviderStateMixin {
     _tabController.dispose();
     super.dispose();
   }
-  
+
+  void clearImage(CompressedImage file){
+    imageController.removeCompressImage(file);
+    pdfController.removePdf(imageController.getOriginalList().indexOf(file));
+    imageController.removeOriginalImage(file);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -258,7 +265,16 @@ class _PdfScreenState extends State<PdfScreen> with TickerProviderStateMixin {
                                                     tooltip: 'Share',
                                                   ),
                                                   IconButton(
-                                                    onPressed: () => pdfController.removePdf(pdfFile),
+                                                    onPressed: (){
+                                                      
+                                                      final originals = imageController.getOriginalList();
+                                                      if (index >= 0 && index < originals.length) {
+                                                        clearImage(originals[index]);
+                                                      } else {
+                                                        
+                                                        pdfController.removePdf(index);
+                                                      }
+                                                    },
                                                     icon: Icon(Icons.delete, size: 20, color: Colors.red),
                                                     tooltip: 'Delete',
                                                   ),
@@ -271,6 +287,12 @@ class _PdfScreenState extends State<PdfScreen> with TickerProviderStateMixin {
                                     ),
                                   ),
                                 ],
+                                if (pdfController.pdfFiles.length < 1) ...[
+                                  Spacer(),
+                                  Center(
+                                      child: BannerAdWidget(adUnitId: "ca-app-pub-3940256099942544/6300978111")
+                                  ),
+                                ]
                               ],
                             ),
                           );
@@ -279,7 +301,7 @@ class _PdfScreenState extends State<PdfScreen> with TickerProviderStateMixin {
                       }),
                     ),
                   ],
-                )
+                ),
               ],
             );
           }),
@@ -378,6 +400,8 @@ class _PdfScreenState extends State<PdfScreen> with TickerProviderStateMixin {
     );
   }
   //endregion
+
+
 
   //region METHOD FOR DISPLAYING IMAGES CARDS
   Widget _buildImageCarousel(
@@ -479,10 +503,7 @@ class _PdfScreenState extends State<PdfScreen> with TickerProviderStateMixin {
                                     children: [
                                       GestureDetector(
                                         onTap: () {
-                                          // Handle remove image logic
-                                          imageController.removeCompressImage(file);
-                                          pdfController.removePdf(imageController.getOriginalList().indexOf(file));
-                                          imageController.removeOriginalImage(file);
+                                          clearImage(file);
                                         },
                                         child: Container(
                                           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),

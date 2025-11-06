@@ -232,14 +232,114 @@ class ImageModel extends GetxController {
                               print('YOUR IMAGE LIMIT IS ONY % YOU !!');
 
                               // Show warning snackbar
-                              Get.snackbar(
-                                'Image Limit Exceeded',
-                                'Only the first $maxImages images have been selected',
-                                backgroundColor: Colors.orange[300],
-                                colorText: Colors.black,
-                                snackPosition: SnackPosition.BOTTOM,
-                                duration: Duration(seconds: 3),
+                              Get.dialog(
+                                AlertDialog(
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(15),
+                                  ),
+                                  title: Row(
+                                    children: [
+                                      Icon(Icons.image_outlined, color: Colors.blue, size: 24),
+                                      SizedBox(width: 8),
+                                      Expanded(
+                                        child: Text(
+                                          'Image Limit Reached',
+                                          style: TextStyle(
+                                            fontSize: 18,
+                                            fontWeight: FontWeight.bold,
+                                            color: theme.colorScheme.onBackground
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  content: Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        'You\'ve reached the free limit of 5 images.',
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.w600,
+                                          fontSize: 15,
+                                          color: theme.colorScheme.onSurface,
+                                        ),
+                                      ),
+                                      SizedBox(height: 12),
+                                      Container(
+                                        padding: EdgeInsets.all(12),
+                                        decoration: BoxDecoration(
+                                          color: theme.colorScheme.primary.withOpacity(0.1),
+                                          borderRadius: BorderRadius.circular(8),
+                                          border: Border.all(color: theme.colorScheme.primary),
+                                        ),
+                                        child: Row(
+                                          children: [
+                                            Icon(Icons.card_giftcard, color: Colors.blue, size: 20),
+                                            SizedBox(width: 8),
+                                            Expanded(
+                                              child: Text(
+                                                'Watch a short ad to unlock up to 15 images!',
+                                                style: TextStyle(
+                                                  fontSize: 13,
+                                                  color: theme.colorScheme.primary,
+                                                  fontWeight: FontWeight.w500,
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  actions: [
+                                   Row(
+                                     mainAxisSize: MainAxisSize.max,
+                                     children: [
+                                       TextButton(
+                                         onPressed: () {
+                                           Get.back();
+                                         },
+                                         child: Text(
+                                           'Maybe Later',
+                                           style: TextStyle(color: Colors.grey[600]),
+                                         ),
+                                       ),
+                                       ElevatedButton.icon(
+                                         onPressed: () {
+                                           Get.back();
+                                           // Show AdMob rewarded ad
+                                           // _showRewardedAd();
+                                         },
+                                         icon: Icon(Icons.play_circle_filled, size: 20),
+                                         label: Text('Watch Ad'),
+                                         style: ElevatedButton.styleFrom(
+                                           backgroundColor: Colors.blue,
+                                           foregroundColor: Colors.white,
+                                           padding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                                           shape: RoundedRectangleBorder(
+                                             borderRadius: BorderRadius.circular(8),
+                                           ),
+                                         ),
+                                       ),
+                                     ],
+                                   )
+                                  ],
+                                ),
+                                barrierDismissible: false,
                               );
+
+                              // Get.snackbar(
+                              //   'Image Limit Exceeded',
+                              //   'Only the first $maxImages images have been selected',
+                              //   backgroundColor: Colors.orange[300],
+                              //   colorText: Colors.black,
+                              //   snackPosition: SnackPosition.BOTTOM,
+                              //   duration: Duration(seconds: 3),
+                              // );
+                            }
+                            else{
+                              Get.back();
                             }
 
                             // Add selected images
@@ -255,7 +355,7 @@ class ImageModel extends GetxController {
                                 ),
                               );
                             }
-                            Get.back();
+
                             clearCompressedList();
                           }
                         },

@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_compressor/controllers/compressImageController.dart';
 import 'package:image_compressor/models/compressImageModel.dart';
+import '../adMob/bannerAdWidget.dart';
 import '../controllers/format_change_view_controller.dart';
 
 class ChangeFormatScreen extends StatefulWidget {
@@ -96,6 +97,10 @@ class _ChangeFormatScreenState extends State<ChangeFormatScreen>
                 if (!hasOriginalImages.value) ...[
                   const SizedBox(height: 30),
                   _buildInstructions(context),
+                  Spacer(),
+                  Center(
+                      child: BannerAdWidget(adUnitId: "ca-app-pub-3940256099942544/6300978111")
+                  ),
                 ],
 
                 Column(
@@ -335,7 +340,6 @@ class _ChangeFormatScreenState extends State<ChangeFormatScreen>
                                                   ),
                                                 ),
                                               ),
-                                              const SizedBox(height: 10),
                                               Row(
                                                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                                                 children: [
@@ -372,25 +376,26 @@ class _ChangeFormatScreenState extends State<ChangeFormatScreen>
                     ),
 
 
-                    if (hasOriginalImages.value && formatController.hasConvertedFiles.value)
-                      Container(
-                        width: double.infinity,
-                        margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                        child: ElevatedButton.icon(
-                          onPressed: () => _showClearAllDialog(),
-                          icon: Icon(Icons.clear_all, color: Colors.white),
-                          label: Text('Clear All Files', style: TextStyle(color: Colors.white)),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.red,
-                            padding: const EdgeInsets.symmetric(vertical: 15),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                          ),
-                        ),
-                      ),
+                    // if (hasOriginalImages.value && formatController.hasConvertedFiles.value)
+                    //   Container(
+                    //     width: double.infinity,
+                    //     margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                    //     child: ElevatedButton.icon(
+                    //       onPressed: () => _showClearAllDialog(),
+                    //       icon: Icon(Icons.clear_all, color: Colors.white),
+                    //       label: Text('Clear All Files', style: TextStyle(color: Colors.white)),
+                    //       style: ElevatedButton.styleFrom(
+                    //         backgroundColor: Colors.red,
+                    //         padding: const EdgeInsets.symmetric(vertical: 15),
+                    //         shape: RoundedRectangleBorder(
+                    //           borderRadius: BorderRadius.circular(12),
+                    //         ),
+                    //       ),
+                    //     ),
+                    //   ),
                   ],
                 ),
+
               ],
             );
           }),
@@ -597,18 +602,24 @@ class _ChangeFormatScreenState extends State<ChangeFormatScreen>
               ),
             ),
             Spacer(),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-              decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.secondary.withOpacity(0.2),
-                borderRadius: BorderRadius.circular(16),
-              ),
-              child: Text(
-                '${files.length} ${files.length == 1 ? 'image' : 'images'}',
-                style: TextStyle(
-                  color: Theme.of(context).colorScheme.secondary,
-                  fontSize: 12,
-                  fontWeight: FontWeight.w600,
+            InkWell(
+              splashColor: Theme.of(context).colorScheme.surface,
+              borderRadius: BorderRadius.circular(16),
+              onTap:() => _showClearAllDialog(),
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                decoration: BoxDecoration(
+                  color: Theme.of(context).colorScheme.secondary.withOpacity(0.2),
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: Text(
+                  // '${files.length} ${files.length == 1 ? 'image' : 'images'}',
+                  'Remove all',
+                  style: TextStyle(
+                    color: Theme.of(context).colorScheme.secondary,
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
               ),
             ),
@@ -668,7 +679,7 @@ class _ChangeFormatScreenState extends State<ChangeFormatScreen>
                                       onTap: () {
                                         imageController.removeCompressImage(file);
                                         imageController.removeOriginalImage(file);
-                                        formatController.convertedFiles.clear();
+                                        formatController.removeFile(File(file.filePath));
                                       },
                                       child: Container(
                                         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),

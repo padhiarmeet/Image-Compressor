@@ -2,7 +2,7 @@ import 'dart:io';
 import 'dart:ui';
 import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_card_swiper/flutter_card_swiper.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 import 'package:image_compressor/controllers/compressImageController.dart';
 
@@ -334,7 +334,7 @@ class _HomepageState extends State<Homepage> with TickerProviderStateMixin {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Expanded(
-                    child: GestureDetector(
+                    child: InkWell(
                       onTap: hasCompressedImages
                           ? () => imageController.downloadImages()
                           : null,
@@ -359,14 +359,12 @@ class _HomepageState extends State<Homepage> with TickerProviderStateMixin {
                         ),
                         child: Column(
                           children: [
-                            Icon(
-                              Icons.save_alt_rounded,
-                              color: hasCompressedImages
-                                  ? Theme.of(context).colorScheme.primary
-                                  : Theme.of(
-                                      context,
-                                    ).colorScheme.outline.withOpacity(0.5),
-                              size: 20,
+                            FaIcon(FontAwesomeIcons.download,size: 18,
+                                color: hasCompressedImages
+                                    ? Theme.of(context).colorScheme.primary
+                                    : Theme.of(
+                                        context,
+                                      ).colorScheme.outline.withOpacity(0.5),
                             ),
                             Text(
                               'Download',
@@ -387,7 +385,7 @@ class _HomepageState extends State<Homepage> with TickerProviderStateMixin {
                   ),
                   const SizedBox(width: 10),
                   Expanded(
-                    child: GestureDetector(
+                    child: InkWell(
                       onTap: hasCompressedImages
                           ? () {
                               imageController.shareImages(
@@ -1084,9 +1082,9 @@ class _HomepageState extends State<Homepage> with TickerProviderStateMixin {
                                         ),
                                         child: Row(
                                           children: [
-                                            Icon(
-                                              Icons.delete_outline,
-                                              size: 20,
+                                            FaIcon(
+                                              FontAwesomeIcons.trashCan,
+                                              size: 16,
                                               color: Colors.white,
                                             ),
                                             SizedBox(width: 5),
@@ -1123,12 +1121,7 @@ class _HomepageState extends State<Homepage> with TickerProviderStateMixin {
                                         ),
                                         child: Row(
                                           children: [
-                                            Icon(
-                                              Icons
-                                                  .edit_outlined, // Changed icon
-                                              size: 20,
-                                              color: Colors.white,
-                                            ),
+                                            FaIcon(FontAwesomeIcons.pen,size: 15,color: Colors.white,),
                                             SizedBox(width: 5),
                                             Text(
                                               "Edit  ",

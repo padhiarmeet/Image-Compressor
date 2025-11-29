@@ -7,20 +7,14 @@
 
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
         <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
-        <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE"/>
-        <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-        <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
-        <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
         <uses-permission android:name="android.permission.READ_MEDIA_IMAGES"/>
-        <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE"
-        tools:ignore="ScopedStorage" />
         <uses-permission android:name="android.permission.CAMERA"/>
 
     <application
         android:requestLegacyExternalStorage="true"
-        android:label="image_compressor"
+        android:label="Image Compressor &amp; PDF Maker"
         android:name="${applicationName}"
-        android:icon="@mipmap/ic_launcher">
+        android:icon="@mipmap/adaptive">
         <activity
             android:name=".MainActivity"
             android:exported="true"
@@ -48,7 +42,8 @@
 
         <meta-data
             android:name="com.google.android.gms.ads.APPLICATION_ID"
-            android:value="ca-app-pub-3940256099942544~3347511713" />
+            android:value="ca-app-pub-9176383426179540~6692640706"/>
+
         <!-- Don't delete the meta-data below.
              This is used by the Flutter tool to generate GeneratedPluginRegistrant.java -->
         <meta-data

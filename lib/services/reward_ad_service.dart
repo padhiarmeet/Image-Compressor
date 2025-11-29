@@ -5,33 +5,35 @@ class RewardAdService {
 
   static Future<void> loadRewardAd() async {
     await RewardedAd.load(
-      adUnitId: "ca-app-pub-3940256099942544/5224354917", // TEST ID
+      adUnitId: "ca-app-pub-3940256099942544/5224354917",
       request: AdRequest(),
       rewardedAdLoadCallback: RewardedAdLoadCallback(
         onAdLoaded: (RewardedAd ad) {
           _rewardedAd = ad;
-          print("✅ Reward Ad Loaded");
+          print("Reward Ad Loaded");
         },
         onAdFailedToLoad: (LoadAdError error) {
-          print("❌ Failed to load Reward ad: $error");
+          print("Failed to load Reward ad: $error");
           _rewardedAd = null;
         },
       ),
     );
   }
 
-  static void showRewardAd(Function onRewardEarned) {
+  static bool showRewardAd(Function onRewardEarned) {
     if (_rewardedAd == null) {
-      print("⚠️ Reward ad not ready");
-      return;
+      print("Reward ad not ready");
+      return false; // Fixed: Added return statement
     }
 
     _rewardedAd!.fullScreenContentCallback = FullScreenContentCallback(
       onAdDismissedFullScreenContent: (ad) {
-        loadRewardAd(); // auto load next ad
+        ad.dispose();
+        loadRewardAd();
       },
       onAdFailedToShowFullScreenContent: (ad, error) {
-        print('❌ Reward ad failed to show: $error');
+        print('Reward ad failed to show: $error');
+        ad.dispose();
         loadRewardAd();
       },
     );
@@ -47,5 +49,6 @@ class RewardAdService {
     );
 
     _rewardedAd = null;
+    return true;
   }
 }

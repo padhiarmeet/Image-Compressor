@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 import 'package:image_compressor/controllers/compressImageController.dart';
 import 'package:image_compressor/controllers/database_controller.dart';
@@ -40,11 +41,12 @@ class _HistoryScreenState extends State<HistoryScreen> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(
-                  Icons.history,
-                  size: 48,
-                  color: Theme.of(context).colorScheme.primary,
-                ),
+                // Icon(
+                //   Icons.history,
+                //   size: 48,
+                //   color: Theme.of(context).colorScheme.primary,
+                // ),
+                FaIcon(FontAwesomeIcons.clockRotateLeft,size: 48,color: Theme.of(context).colorScheme.primary,),
                 const SizedBox(height: 16),
                 Text(
                   'No History Yet',
@@ -283,8 +285,9 @@ class _HistoryScreenState extends State<HistoryScreen> {
                                               ),
                                             ),
                                             Expanded(
-                                              child: Icon(
-                                                Icons.arrow_forward,
+                                              child:
+                                              Icon(
+                                                Icons.arrow_forward_outlined,
                                                 color: Theme.of(context).colorScheme.primary,
                                                 size: 14,
                                               ),
@@ -343,9 +346,10 @@ class _HistoryScreenState extends State<HistoryScreen> {
                                       height: 34,
                                       child: TextButton.icon(
                                         onPressed: () => _handleDownload(item.filePath),
-                                        icon: Icon(
+                                        icon:
+                                        Icon(
                                           Icons.download_outlined,
-                                          size: 14,
+                                          size: 16,
                                           color: Theme.of(context).colorScheme.onSurfaceVariant,
                                         ),
                                         label: Text(
@@ -375,7 +379,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                                       child: ElevatedButton.icon(
                                         onPressed: () => _handleShare(item.filePath),
                                         icon: Icon(
-                                          Icons.share_outlined,
+                                          Icons.share,
                                           size: 14,
                                           color: Theme.of(context).colorScheme.onPrimary,
                                         ),

@@ -1,5 +1,3 @@
-
-
 import 'package:get/get.dart';
 import 'package:image_compressor/models/compressImageModel.dart';
 

@@ -1,12 +1,12 @@
 import 'dart:io';
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 import 'package:image_compressor/controllers/themeController.dart';
 import 'package:image_compressor/frontend/formate_change_screen.dart';
 import 'package:image_compressor/frontend/homePage.dart';
 import 'package:image_compressor/frontend/pdf_screen.dart';
-
 import '../controllers/page_view_cntroller.dart';
 import 'history_screen.dart';
 
@@ -49,36 +49,31 @@ class _LayoutScreenState extends State<LayoutScreen> with TickerProviderStateMix
                 child: Row(
                   children: [
                     Container(
-                      width: 36,
-                      height: 36,
-                      decoration: BoxDecoration(
-                        color: Theme.of(context).colorScheme.primary,
-                        borderRadius: BorderRadius.circular(10),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Theme.of(
-                              context,
-                            ).colorScheme.primary.withOpacity(0.3),
-                            blurRadius: 8,
-                            offset: const Offset(0, 2),
-                          ),
-                        ],
-                      ),
-                      child: const Icon(
-                        Icons.compress,
-                        color: Colors.white,
-                        size: 20,
-                      ),
+                      width: 48,
+                      height: 48,
+                      child: Image.asset('assets/app_icon/app_iconV3.png')
                     ),
                     const SizedBox(width: 12),
-                    Text(
-                      'Compressor',
-                      style: TextStyle(
-                        color: Theme.of(context).colorScheme.onBackground,
-                        fontSize: 24,
-                        fontWeight: FontWeight.w700,
-                        letterSpacing: -0.5,
-                      ),
+                    Obx(
+
+                      () {
+                        String title = pageViewController.currentPageIndex == 0
+                            ? 'Compressor'
+                            : pageViewController.currentPageIndex == 1
+                            ? 'History'
+                            : pageViewController.currentPageIndex == 2
+                            ? 'PDF Maker'
+                            : 'Change Format';
+                        return Text(
+                          title,
+                          style: TextStyle(
+                            color: Theme.of(context).colorScheme.onBackground,
+                            fontSize: 24,
+                            fontWeight: FontWeight.w700,
+                            letterSpacing: -0.5,
+                          ),
+                        );
+                      },
                     ),
                   ],
                 ),
@@ -179,17 +174,17 @@ class _LayoutScreenState extends State<LayoutScreen> with TickerProviderStateMix
                 ),
                 BottomNavigationBarItem(
                   activeIcon: Icon(Icons.history_rounded),
-                  icon: Icon(Icons.history_outlined),
+                  icon: FaIcon(FontAwesomeIcons.clockRotateLeft,size: 20,),
                   label: 'History',
                 ),
                 BottomNavigationBarItem(
-                  activeIcon: Icon(Icons.picture_as_pdf_rounded),
-                  icon: Icon(Icons.picture_as_pdf_outlined),
+                  activeIcon: FaIcon(FontAwesomeIcons.solidFilePdf,size: 18,),
+                  icon: FaIcon(FontAwesomeIcons.filePdf,size: 20,),
                   label: 'Convert to PDF',
                 ),
                 BottomNavigationBarItem(
                   activeIcon: Icon(Icons.edit_document),
-                  icon: Icon(Icons.edit_document),
+                  icon: FaIcon(FontAwesomeIcons.filePen,size: 20,),
                   label: 'Change Format',
                 ),
               ],
@@ -201,4 +196,3 @@ class _LayoutScreenState extends State<LayoutScreen> with TickerProviderStateMix
   }
 //endregion
 }
-

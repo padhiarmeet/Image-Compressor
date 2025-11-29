@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_card_swiper/flutter_card_swiper.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 import 'package:image_compressor/controllers/compressImageController.dart';
 import 'package:image_compressor/controllers/pdf_view_controller.dart';
@@ -117,6 +118,10 @@ class _PdfScreenState extends State<PdfScreen> with TickerProviderStateMixin {
                 if (!hasOriginalImages.value) ...[
                   const SizedBox(height: 30),
                   _buildInstructions(context),
+                  Spacer(),
+                  Center(
+                      child: BannerAdWidget(adUnitId: "ca-app-pub-3940256099942544/6300978111")
+                  ),
                 ],
                 Column(
                   children: [
@@ -128,7 +133,8 @@ class _PdfScreenState extends State<PdfScreen> with TickerProviderStateMixin {
                        onPressed: hasOriginalImages.value
                            ? () => pdfController.generatePdf()
                            : null,
-                       icon: Icon(Icons.picture_as_pdf),
+                       // icon: Icon(Icons.picture_as_pdf_rounded),
+                       icon: FaIcon(FontAwesomeIcons.solidFilePdf,size: 20),
                        label: Text('Convert to PDF'),
                        style: ElevatedButton.styleFrom(
                          padding: const EdgeInsets.symmetric(vertical: 15),
@@ -166,14 +172,14 @@ class _PdfScreenState extends State<PdfScreen> with TickerProviderStateMixin {
                                          height: 20,
                                          child: CircularProgressIndicator(strokeWidth: 2),
                                        )
-                                           : Icon(Icons.download),
+                                           : FaIcon(FontAwesomeIcons.download,size: 16),
                                        label: Text(
                                            pdfController.isDownloading.value
                                                ? 'Downloading...'
                                                : 'Download (${pdfController.pdfFiles.length})'
                                        ),
                                        style: ElevatedButton.styleFrom(
-                                         backgroundColor: Colors.green,
+                                         backgroundColor: Colors.green[500],
                                          foregroundColor: Colors.white,
                                          padding: const EdgeInsets.symmetric(vertical: 15),
                                          shape: RoundedRectangleBorder(
@@ -189,7 +195,7 @@ class _PdfScreenState extends State<PdfScreen> with TickerProviderStateMixin {
                                      margin: const EdgeInsets.only(bottom: 10),
                                      child: ElevatedButton.icon(
                                        onPressed: () => pdfController.shareAllPdfs(),
-                                       icon: Icon(Icons.share),
+                                       icon: FaIcon(FontAwesomeIcons.arrowUpRightFromSquare,size: 16),
                                        label: Text('Share All PDFs'),
                                        style: ElevatedButton.styleFrom(
                                          backgroundColor: Theme.of(context).colorScheme.primary,
@@ -239,11 +245,7 @@ class _PdfScreenState extends State<PdfScreen> with TickerProviderStateMixin {
                                           child: Column(
                                             mainAxisAlignment: MainAxisAlignment.center,
                                             children: [
-                                              Icon(
-                                                Icons.picture_as_pdf,
-                                                size: 30,
-                                                color: Colors.red,
-                                              ),
+                                              FaIcon(FontAwesomeIcons.solidFilePdf,size: 25,color: Colors.red,),
                                               const SizedBox(height: 5),
                                               Text(
                                                 fileName,
@@ -256,12 +258,12 @@ class _PdfScreenState extends State<PdfScreen> with TickerProviderStateMixin {
                                                 children: [
                                                   IconButton(
                                                     onPressed: () => pdfController.downloadPdf(pdfFile),
-                                                    icon: Icon(Icons.download, size: 20),
+                                                    icon: FaIcon(FontAwesomeIcons.download,size: 18),
                                                     tooltip: 'Download',
                                                   ),
                                                   IconButton(
                                                     onPressed: () => pdfController.sharePdf(pdfFile),
-                                                    icon: Icon(Icons.share, size: 20),
+                                                    icon: FaIcon(FontAwesomeIcons.arrowUpRightFromSquare,size: 17),
                                                     tooltip: 'Share',
                                                   ),
                                                   IconButton(
@@ -275,7 +277,8 @@ class _PdfScreenState extends State<PdfScreen> with TickerProviderStateMixin {
                                                         pdfController.removePdf(index);
                                                       }
                                                     },
-                                                    icon: Icon(Icons.delete, size: 20, color: Colors.red),
+                                                    // icon: Icon(Icons.delete, size: 20, color: Colors.red),
+                                                    icon: FaIcon(FontAwesomeIcons.trashCan,size: 18),
                                                     tooltip: 'Delete',
                                                   ),
                                                 ],
@@ -287,12 +290,6 @@ class _PdfScreenState extends State<PdfScreen> with TickerProviderStateMixin {
                                     ),
                                   ),
                                 ],
-                                if (pdfController.pdfFiles.length < 1) ...[
-                                  Spacer(),
-                                  Center(
-                                      child: BannerAdWidget(adUnitId: "ca-app-pub-3940256099942544/6300978111")
-                                  ),
-                                ]
                               ],
                             ),
                           );
@@ -513,11 +510,7 @@ class _PdfScreenState extends State<PdfScreen> with TickerProviderStateMixin {
                                           ),
                                           child: Row(
                                             children: [
-                                              Icon(
-                                                Icons.delete_outline,
-                                                size: 20,
-                                                color: Colors.white,
-                                              ),
+                                              FaIcon(FontAwesomeIcons.trashCan,size: 16,color: Colors.white,),
                                               SizedBox(width: 5),
                                               Text(
                                                 "Remove",
@@ -545,11 +538,7 @@ class _PdfScreenState extends State<PdfScreen> with TickerProviderStateMixin {
                                           ),
                                           child: Row(
                                             children: [
-                                              Icon(
-                                                Icons.edit_outlined, // Changed icon
-                                                size: 20,
-                                                color: Colors.white,
-                                              ),
+                                              FaIcon(FontAwesomeIcons.pen,size: 15,color: Colors.white,),
                                               SizedBox(width: 5),
                                               Text(
                                                 "Edit  ",

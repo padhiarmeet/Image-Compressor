@@ -9,6 +9,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:photo_manager/photo_manager.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:image_compressor/controllers/reward_controller.dart';
 import 'package:path/path.dart' as path;
 
 class CompressedImage {
@@ -52,13 +53,12 @@ class CompressedImage {
           ? DateTime.parse(map['compressedAt'])
           : null,
       format: map['format'],
-      isCompressed: (map['isCompressed'] == 1 ?true : false) ?? false,
+      isCompressed: (map['isCompressed'] == 1 ? true : false) ?? false,
     );
   }
 }
 
 class ImageModel extends GetxController {
-
   final RxList<CompressedImage> _originalImages = <CompressedImage>[].obs;
   final RxList<CompressedImage> _compressImages = <CompressedImage>[].obs;
 
@@ -77,7 +77,7 @@ class ImageModel extends GetxController {
     return _originalImages;
   }
 
-    void clearOriginalList() {
+  void clearOriginalList() {
     _originalImages.clear();
   }
   //endregion
@@ -108,7 +108,7 @@ class ImageModel extends GetxController {
 
   String getImageFormat(String path) {
     final ext = path.split('.').last.toLowerCase();
-    return ext; // png, jpg, jpeg, etc.
+    return ext; // png, jpg, jpeg.
   }
 
   // New method to check if all images are already compressed
@@ -119,7 +119,9 @@ class ImageModel extends GetxController {
 
   // New method to get compression status summary
   Map<String, int> getCompressionStatus() {
-    int compressed = _originalImages.where((image) => image.isCompressed).length;
+    int compressed = _originalImages
+        .where((image) => image.isCompressed)
+        .length;
     int total = _originalImages.length;
     int uncompressed = total - compressed;
 
@@ -149,7 +151,6 @@ class ImageModel extends GetxController {
     }
 
     if (status.isGranted) {
-
       ThemeData theme = Get.theme;
 
       Get.bottomSheet(
@@ -170,7 +171,7 @@ class ImageModel extends GetxController {
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w600,
-                  color: theme.colorScheme.onSurface
+                  color: theme.colorScheme.onSurface,
                 ),
               ),
               SizedBox(height: 24),
@@ -184,7 +185,9 @@ class ImageModel extends GetxController {
                     children: [
                       ElevatedButton(
                         onPressed: () async {
-                          final XFile? pickedImage = await picker.pickImage(source: ImageSource.camera);
+                          final XFile? pickedImage = await picker.pickImage(
+                            source: ImageSource.camera,
+                          );
 
                           if (pickedImage != null) {
                             addOriginalImage(
@@ -202,11 +205,22 @@ class ImageModel extends GetxController {
                           }
                         },
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: Get.theme.colorScheme.primary.withOpacity(0.1),
-                          shape: RoundedRectangleBorder(side: BorderSide(color: theme.primaryColor.withOpacity(0.15)),borderRadius: BorderRadius.circular(12)),
+                          backgroundColor: Get.theme.colorScheme.primary
+                              .withOpacity(0.1),
+                          shape: RoundedRectangleBorder(
+                            side: BorderSide(
+                              color: theme.primaryColor.withOpacity(0.15),
+                            ),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
                           padding: EdgeInsets.all(16),
                         ),
-                        child: Icon(Icons.camera_alt_outlined, size: 28,color: theme.colorScheme.primary,),
+                        child:
+                        Icon(
+                          Icons.camera_alt_outlined,
+                          size: 28,
+                          color: theme.colorScheme.primary,
+                        ),
                       ),
                       SizedBox(height: 8),
                       Text('Camera', style: TextStyle(fontSize: 14)),
@@ -220,19 +234,21 @@ class ImageModel extends GetxController {
                       ElevatedButton(
                         onPressed: () async {
                           final List<XFile> images = await picker.pickMultiImage();
-
                           if (images.isNotEmpty) {
-                            const int maxImages = 5;
+                            int maxImages = 5;
+                            try {
+                              maxImages = Get.find<RewardController>().imageLimit.value;
+                            } catch (e) {
+                              maxImages = 5;
+                            }
+
                             List<XFile> selectedImages = images;
 
-                            // Check if more than 5 images were selected
                             if (images.length > maxImages) {
-                              Get.back();
-                              selectedImages = images.take(maxImages).toList();
-                              print('YOUR IMAGE LIMIT IS ONY % YOU !!');
+                              Get.back(); // Close bottom sheet first
 
-                              // Show warning snackbar
-                              Get.dialog(
+                              // Show dialog and wait for result
+                              final watchAd = await Get.dialog<bool>(
                                 AlertDialog(
                                   shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(15),
@@ -245,9 +261,9 @@ class ImageModel extends GetxController {
                                         child: Text(
                                           'Image Limit Reached',
                                           style: TextStyle(
-                                            fontSize: 18,
-                                            fontWeight: FontWeight.bold,
-                                            color: theme.colorScheme.onBackground
+                                              fontSize: 18,
+                                              fontWeight: FontWeight.bold,
+                                              color: theme.colorScheme.onBackground
                                           ),
                                         ),
                                       ),
@@ -258,7 +274,7 @@ class ImageModel extends GetxController {
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
                                       Text(
-                                        'You\'ve reached the free limit of 5 images.',
+                                        'You\'ve selected ${images.length} images but your current limit is $maxImages.',
                                         style: TextStyle(
                                           fontWeight: FontWeight.w600,
                                           fontSize: 15,
@@ -279,7 +295,7 @@ class ImageModel extends GetxController {
                                             SizedBox(width: 8),
                                             Expanded(
                                               child: Text(
-                                                'Watch a short ad to unlock up to 15 images!',
+                                                'Watch a short ad to unlock up to ${maxImages + 5} images!',
                                                 style: TextStyle(
                                                   fontSize: 13,
                                                   color: theme.colorScheme.primary,
@@ -293,78 +309,122 @@ class ImageModel extends GetxController {
                                     ],
                                   ),
                                   actions: [
-                                   Row(
-                                     mainAxisSize: MainAxisSize.max,
-                                     children: [
-                                       TextButton(
-                                         onPressed: () {
-                                           Get.back();
-                                         },
-                                         child: Text(
-                                           'Maybe Later',
-                                           style: TextStyle(color: Colors.grey[600]),
-                                         ),
-                                       ),
-                                       ElevatedButton.icon(
-                                         onPressed: () {
-                                           Get.back();
-                                           // Show AdMob rewarded ad
-                                           // _showRewardedAd();
-                                         },
-                                         icon: Icon(Icons.play_circle_filled, size: 20),
-                                         label: Text('Watch Ad'),
-                                         style: ElevatedButton.styleFrom(
-                                           backgroundColor: Colors.blue,
-                                           foregroundColor: Colors.white,
-                                           padding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-                                           shape: RoundedRectangleBorder(
-                                             borderRadius: BorderRadius.circular(8),
-                                           ),
-                                         ),
-                                       ),
-                                     ],
-                                   )
+                                    Row(
+                                      mainAxisSize: MainAxisSize.max,
+                                      children: [
+                                        TextButton(
+                                          onPressed: () {
+                                            Get.back(result: false);
+                                          },
+                                          child: Text(
+                                            'Maybe Later',
+                                            style: TextStyle(color: Colors.grey[600]),
+                                          ),
+                                        ),
+                                        Spacer(),
+                                        ElevatedButton.icon(
+                                          onPressed: () {
+                                            Get.back(result: true);
+                                          },
+                                          icon: Icon(Icons.play_circle_filled, size: 20),
+                                          label: Text('Watch Ad'),
+                                          style: ElevatedButton.styleFrom(
+                                            backgroundColor: Colors.blue,
+                                            foregroundColor: Colors.white,
+                                            padding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius: BorderRadius.circular(8),
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    )
                                   ],
                                 ),
                                 barrierDismissible: false,
                               );
 
-                              // Get.snackbar(
-                              //   'Image Limit Exceeded',
-                              //   'Only the first $maxImages images have been selected',
-                              //   backgroundColor: Colors.orange[300],
-                              //   colorText: Colors.black,
-                              //   snackPosition: SnackPosition.BOTTOM,
-                              //   duration: Duration(seconds: 3),
-                              // );
-                            }
-                            else{
-                              Get.back();
-                            }
+                              if (watchAd == true) {
+                                // User chose to watch ad
+                                bool rewarded = false;
+                                try {
+                                  final rc = Get.find<RewardController>();
+                                  rewarded = await rc.increaseLimitByWatchingAd();
+                                } catch (e) {
+                                  final rc = Get.put(RewardController());
+                                  rewarded = await rc.increaseLimitByWatchingAd();
+                                }
 
-                            // Add selected images
-                            for (XFile oneImage in selectedImages) {
-                              addOriginalImage(
-                                CompressedImage(
-                                  filePath: oneImage.path,
-                                  originalSize: await oneImage.length() / 1024,
-                                  compressedSize: 0,
-                                  compressedAt: DateTime.now(),
-                                  format: getImageFormat(oneImage.path),
-                                  isCompressed: false,
-                                ),
-                              );
-                            }
+                                if (rewarded) {
+                                  // Get updated limit after watching ad
+                                  int newLimit = 10;
+                                  try {
+                                    newLimit = Get.find<RewardController>().imageLimit.value;
+                                  } catch (e) {
+                                    newLimit = 10;
+                                  }
+                                  selectedImages = images.take(newLimit).toList();
+                                } else {
+                                  // Ad failed, use original limit
+                                  selectedImages = images.take(maxImages).toList();
+                                }
+                              } else {
+                                // User chose "Maybe Later", use current limit
+                                selectedImages = images.take(maxImages).toList();
+                              }
 
-                            clearCompressedList();
+                              // Add images after dialog handling is complete
+                              for (XFile oneImage in selectedImages) {
+                                addOriginalImage(
+                                  CompressedImage(
+                                    filePath: oneImage.path,
+                                    originalSize: await oneImage.length() / 1024,
+                                    compressedSize: 0,
+                                    compressedAt: DateTime.now(),
+                                    format: getImageFormat(oneImage.path),
+                                    isCompressed: false,
+                                  ),
+                                );
+                              }
+                              clearCompressedList();
+
+                            } else {
+                              // Within limit, add all images directly
+                              Get.back(); // Close bottom sheet
+
+                              for (XFile oneImage in selectedImages) {
+                                addOriginalImage(
+                                  CompressedImage(
+                                    filePath: oneImage.path,
+                                    originalSize: await oneImage.length() / 1024,
+                                    compressedSize: 0,
+                                    compressedAt: DateTime.now(),
+                                    format: getImageFormat(oneImage.path),
+                                    isCompressed: false,
+                                  ),
+                                );
+                              }
+                              clearCompressedList();
+                            }
                           }
                         },
+
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: Get.theme.colorScheme.primary.withOpacity(0.1),
-                          shape: RoundedRectangleBorder(side: BorderSide(color: theme.primaryColor.withOpacity(0.15)),borderRadius: BorderRadius.circular(12)),
+                          backgroundColor: Get.theme.colorScheme.primary
+                              .withOpacity(0.1),
+                          shape: RoundedRectangleBorder(
+                            side: BorderSide(
+                              color: theme.primaryColor.withOpacity(0.15),
+                            ),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
                           padding: EdgeInsets.all(16),
                         ),
-                        child: Icon(Icons.image_outlined, size: 28,color: theme.colorScheme.primary,),
+                        child: Icon(
+                          Icons.image_outlined,
+                          size: 28,
+                          color: theme.colorScheme.primary,
+                        ),
                       ),
                       SizedBox(height: 8),
                       Text('Gallery', style: TextStyle(fontSize: 14)),
@@ -386,7 +446,6 @@ class ImageModel extends GetxController {
         ),
         backgroundColor: Colors.transparent,
       );
-
     }
   }
   //endregion
@@ -396,8 +455,8 @@ class ImageModel extends GetxController {
     // Check if all images are already compressed
     if (areAllImagesCompressed()) {
       Get.snackbar(
-        'Already Compressed',
-        'All images have already been compressed',
+        "Already Compressed",
+        "All images have already been compressed",
         backgroundColor: Colors.orange[300],
         colorText: Colors.black,
         snackPosition: SnackPosition.BOTTOM,
@@ -408,7 +467,8 @@ class ImageModel extends GetxController {
     _compressImages.clear();
 
     if (_originalImages.isEmpty) {
-      Get.snackbar('Error', 'Please select images first',snackPosition: SnackPosition.BOTTOM);
+      Get.snackbar("Error", "Please select images first",
+          snackPosition: SnackPosition.BOTTOM);
       return;
     }
 
@@ -425,8 +485,7 @@ class ImageModel extends GetxController {
       final originalSizeKB = originalBytes.length / 1024;
 
       // Create compressed path
-      final targetPath =
-          '${dir.path}/${DateTime.now().millisecondsSinceEpoch}_${image.filePath.split('/').last}';
+      final targetPath = '${dir.path}/${DateTime.now().millisecondsSinceEpoch}_${image.filePath.split('/').last}';
 
       final XFile? result = await FlutterImageCompress.compressAndGetFile(
         image.filePath,
@@ -447,22 +506,31 @@ class ImageModel extends GetxController {
           compressedSize: compressedSizeKB,
           compressedAt: DateTime.now(),
           format: image.format,
-          isCompressed: true, // Mark as compressed
+          isCompressed: true,
         );
 
         _compressImages.add(oneImage);
-
         // Mark the original image as compressed
         image.isCompressed = true;
       }
     }
 
     if (_compressImages.isEmpty) {
-      Get.snackbar('Compression Failed', 'All images failed to compress',snackPosition: SnackPosition.BOTTOM);
+      Get.snackbar("Compression Failed", "All images failed to compress",
+          snackPosition: SnackPosition.BOTTOM);
     } else {
-      Get.snackbar('Success', 'Images compressed successfully',snackPosition: SnackPosition.BOTTOM);
+      Get.snackbar("Success", "Images compressed successfully",
+          snackPosition: SnackPosition.BOTTOM);
+    }
+
+    // Reset the limit back to 5 after compression
+    try {
+      Get.find<RewardController>().resetLimit();
+    } catch (e) {
+      // Controller not found, skip reset
     }
   }
+
   //endregion
 
   //region Method for compressing image to specific size
@@ -482,14 +550,20 @@ class ImageModel extends GetxController {
     _compressImages.clear();
 
     if (_originalImages.isEmpty) {
-      Get.snackbar('Error', 'Please select images first',snackPosition: SnackPosition.BOTTOM);
+      Get.snackbar(
+        'Error',
+        'Please select images first',
+        snackPosition: SnackPosition.BOTTOM,
+      );
       return;
     }
 
     final dir = await path_provider.getTemporaryDirectory();
 
     // Only compress images that haven't been compressed yet
-    final uncompressedImages = _originalImages.where((image) => !image.isCompressed).toList();
+    final uncompressedImages = _originalImages
+        .where((image) => !image.isCompressed)
+        .toList();
 
     for (var image in uncompressedImages) {
       final originalFile = File(image.filePath);
@@ -524,9 +598,11 @@ class ImageModel extends GetxController {
         final compressedBytes = await compressedFile.readAsBytes();
         final compressedSizeKB = compressedBytes.length / 1024;
 
-        print("FilePath : ${result.path}, \noriginalSize : ${await originalFile.length() / 1024} \ncompressedSize: $compressedSizeKB\ncompressedAt: ${DateTime.now()}\nformat: ${image.format}");
+        print(
+          "FilePath : ${result.path}, \noriginalSize : ${await originalFile.length() / 1024} \ncompressedSize: $compressedSizeKB\ncompressedAt: ${DateTime.now()}\nformat: ${image.format}",
+        );
 
-        var oneImage =  CompressedImage(
+        var oneImage = CompressedImage(
           filePath: result.path,
           originalSize: await originalFile.length() / 1024,
           compressedSize: compressedSizeKB,
@@ -539,14 +615,30 @@ class ImageModel extends GetxController {
 
         // Mark the original image as compressed
         image.isCompressed = true;
+
+
       }
     }
 
     if (_compressImages.isEmpty) {
-      Get.snackbar('Compression Failed', 'Images could not be compressed to target size',snackPosition: SnackPosition.BOTTOM);
-    } else {
+      Get.snackbar(
+        'Compression Failed',
+        'Images could not be compressed to target size',
+        snackPosition: SnackPosition.BOTTOM,
+      );
+    }
+      else {
       final compressedCount = _compressImages.length;
-      Get.snackbar('Success', '$compressedCount images compressed to ≤ $targetSizeKB KB',snackPosition: SnackPosition.BOTTOM);
+      Get.snackbar(
+        'Success',
+        '$compressedCount images compressed to ≤ $targetSizeKB KB',
+        snackPosition: SnackPosition.BOTTOM,
+      );
+    }
+    try {
+      Get.find<RewardController>().resetLimit();
+    } catch (e) {
+      print(e);
     }
   }
   //endregion
@@ -568,20 +660,30 @@ class ImageModel extends GetxController {
     _compressImages.clear();
 
     if (_originalImages.isEmpty) {
-      Get.snackbar('Error', 'Please select images first', snackPosition: SnackPosition.BOTTOM);
+      Get.snackbar(
+        'Error',
+        'Please select images first',
+        snackPosition: SnackPosition.BOTTOM,
+      );
       return;
     }
 
     // Validate quality range
     if (targetQuality < 1 || targetQuality > 100) {
-      Get.snackbar('Invalid Quality', 'Quality must be between 1-100', snackPosition: SnackPosition.BOTTOM);
+      Get.snackbar(
+        'Invalid Quality',
+        'Quality must be between 1-100',
+        snackPosition: SnackPosition.BOTTOM,
+      );
       return;
     }
 
     final dir = await path_provider.getTemporaryDirectory();
 
     // Only compress images that haven't been compressed yet
-    final uncompressedImages = _originalImages.where((image) => !image.isCompressed).toList();
+    final uncompressedImages = _originalImages
+        .where((image) => !image.isCompressed)
+        .toList();
 
     for (var image in uncompressedImages) {
       final originalFile = File(image.filePath);
@@ -603,7 +705,7 @@ class ImageModel extends GetxController {
         final compressedBytes = await compressedFile.readAsBytes();
         final compressedSizeKB = compressedBytes.length / 1024;
 
-        var oneImage =  CompressedImage(
+        var oneImage = CompressedImage(
           filePath: result.path,
           originalSize: await originalFile.length() / 1024,
           compressedSize: compressedSizeKB,
@@ -622,10 +724,23 @@ class ImageModel extends GetxController {
     }
 
     if (_compressImages.isEmpty) {
-      Get.snackbar('Compression Failed', 'Images could not be compressed', snackPosition: SnackPosition.BOTTOM);
+      Get.snackbar(
+        'Compression Failed',
+        'Images could not be compressed',
+        snackPosition: SnackPosition.BOTTOM,
+      );
     } else {
       final compressedCount = _compressImages.length;
-      Get.snackbar('Success', '$compressedCount images compressed at $targetQuality% quality', snackPosition: SnackPosition.BOTTOM);
+      Get.snackbar(
+        'Success',
+        '$compressedCount images compressed at $targetQuality% quality',
+        snackPosition: SnackPosition.BOTTOM,
+      );
+    }
+    try {
+      Get.find<RewardController>().resetLimit();
+    } catch (e) {
+      // Controller not found, skip reset
     }
   }
   //endregion
@@ -704,7 +819,6 @@ class ImageModel extends GetxController {
         }
       }
 
-
       if (successCount > 0) {
         Get.snackbar(
           'Download Complete',
@@ -752,7 +866,6 @@ class ImageModel extends GetxController {
 
     try {
       File? file;
-
 
       if (filePath.startsWith('content://')) {
         final id = filePath.split("/").last;
@@ -815,16 +928,20 @@ class ImageModel extends GetxController {
 
   //region METHOD FOR SHARING MULTIPLE IMAGES
   Future<void> shareImages(List<CompressedImage> files) async {
-    final List<XFile> xFiles = files.map((file) => XFile(file.filePath)).toList();
+    final List<XFile> xFiles = files
+        .map((file) => XFile(file.filePath))
+        .toList();
 
-    final params = ShareParams(
-      files: xFiles,
-    );
+    final params = ShareParams(files: xFiles);
 
     final shareResult = await SharePlus.instance.share(params);
 
     if (shareResult.status == ShareResultStatus.success) {
-      Get.snackbar('Success','Image shared successfully !',snackPosition: SnackPosition.BOTTOM);
+      Get.snackbar(
+        'Success',
+        'Image shared successfully !',
+        snackPosition: SnackPosition.BOTTOM,
+      );
     }
   }
   //endregion
@@ -840,8 +957,11 @@ class ImageModel extends GetxController {
         file = await asset?.file;
       } catch (e) {
         debugPrint("Error resolving content URI for sharing: $e");
-        Get.snackbar('Error', 'Unable to share this file',
-            snackPosition: SnackPosition.BOTTOM);
+        Get.snackbar(
+          'Error',
+          'Unable to share this file',
+          snackPosition: SnackPosition.BOTTOM,
+        );
         return;
       }
     } else {
@@ -849,24 +969,28 @@ class ImageModel extends GetxController {
     }
 
     if (file == null || !(await file.exists())) {
-      Get.snackbar('Error', 'File not found',
-          snackPosition: SnackPosition.BOTTOM);
+      Get.snackbar(
+        'Error',
+        'File not found',
+        snackPosition: SnackPosition.BOTTOM,
+      );
       return;
     }
 
     final xfile = XFile(file.path);
 
-    final params = ShareParams(
-      files: [xfile],
-    );
+    final params = ShareParams(files: [xfile]);
 
     final shareResult = await SharePlus.instance.share(params);
 
     if (shareResult.status == ShareResultStatus.success) {
-      Get.snackbar('Success', 'Image shared successfully!',
-          snackPosition: SnackPosition.BOTTOM);
+      Get.snackbar(
+        'Success',
+        'Image shared successfully!',
+        snackPosition: SnackPosition.BOTTOM,
+      );
     }
   }
 
-//endregion
+  //endregion
 }

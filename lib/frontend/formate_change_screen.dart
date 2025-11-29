@@ -2,6 +2,7 @@ import 'dart:io';
 import 'dart:ui';
 import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 import 'package:image_compressor/controllers/compressImageController.dart';
 import 'package:image_compressor/models/compressImageModel.dart';
@@ -126,7 +127,7 @@ class _ChangeFormatScreenState extends State<ChangeFormatScreen>
                                         height: 16,
                                         child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
                                       )
-                                          : Icon(Icons.image),
+                                          : FaIcon(FontAwesomeIcons.image,size: 16),
                                       label: Text('Convert to JPG'),
                                       style: ElevatedButton.styleFrom(
                                         padding: const EdgeInsets.symmetric(vertical: 15),
@@ -150,7 +151,7 @@ class _ChangeFormatScreenState extends State<ChangeFormatScreen>
                                         height: 16,
                                         child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
                                       )
-                                          : Icon(Icons.image_outlined),
+                                          : FaIcon(FontAwesomeIcons.solidImage,size: 16),
                                       label: Text('Convert to PNG'),
                                       style: ElevatedButton.styleFrom(
                                         padding: const EdgeInsets.symmetric(vertical: 15),
@@ -180,7 +181,7 @@ class _ChangeFormatScreenState extends State<ChangeFormatScreen>
                                         height: 16,
                                         child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
                                       )
-                                          : Icon(Icons.web),
+                                          : FaIcon(FontAwesomeIcons.imagePortrait,size: 16),
                                       label: Text('Convert to WEBP'),
                                       style: ElevatedButton.styleFrom(
                                         padding: const EdgeInsets.symmetric(vertical: 15),
@@ -205,7 +206,7 @@ class _ChangeFormatScreenState extends State<ChangeFormatScreen>
                                         height: 16,
                                         child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
                                       )
-                                          : Icon(Icons.image_aspect_ratio),
+                                          : FaIcon(FontAwesomeIcons.fileImage,size: 16),
                                       label: Text('Convert to BMP'),
                                       style: ElevatedButton.styleFrom(
                                         padding: const EdgeInsets.symmetric(vertical: 15),
@@ -240,7 +241,7 @@ class _ChangeFormatScreenState extends State<ChangeFormatScreen>
                                       margin: const EdgeInsets.only(bottom: 10),
                                       child: ElevatedButton.icon(
                                         onPressed: () => formatController.downloadAllFiles(),
-                                        icon: Icon(Icons.download),
+                                        icon: FaIcon(FontAwesomeIcons.download,size: 16),
                                         label: Text('Download (${formatController.convertedFiles.length})'),
                                         style: ElevatedButton.styleFrom(
                                           backgroundColor: Colors.green,
@@ -259,7 +260,7 @@ class _ChangeFormatScreenState extends State<ChangeFormatScreen>
                                       margin: const EdgeInsets.only(bottom: 10),
                                       child: ElevatedButton.icon(
                                         onPressed: () => formatController.shareAllFiles(),
-                                        icon: Icon(Icons.share),
+                                        icon: FaIcon(FontAwesomeIcons.arrowUpRightFromSquare,size: 16),
                                         label: Text('Share All'),
                                         style: ElevatedButton.styleFrom(
                                           backgroundColor: Theme.of(context).colorScheme.primary,
@@ -345,17 +346,17 @@ class _ChangeFormatScreenState extends State<ChangeFormatScreen>
                                                 children: [
                                                   IconButton(
                                                     onPressed: () => formatController.downloadFile(file),
-                                                    icon: Icon(Icons.download, size: 20),
+                                                    icon: FaIcon(FontAwesomeIcons.download,size: 18),
                                                     tooltip: 'Download',
                                                   ),
                                                   IconButton(
                                                     onPressed: () => formatController.shareFile(file),
-                                                    icon: Icon(Icons.share, size: 20),
+                                                    icon: FaIcon(FontAwesomeIcons.arrowUpRightFromSquare,size: 17),
                                                     tooltip: 'Share',
                                                   ),
                                                   IconButton(
                                                     onPressed: () => _showDeleteConfirmation(file),
-                                                    icon: Icon(Icons.delete, size: 20, color: Colors.red),
+                                                    icon: FaIcon(FontAwesomeIcons.trashCan,size: 18),
                                                     tooltip: 'Delete',
                                                   ),
                                                 ],
@@ -536,10 +537,15 @@ class _ChangeFormatScreenState extends State<ChangeFormatScreen>
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(
-                    Icons.image_outlined,
+                  // Icon(
+                  //   Icons.image_outlined,
+                  //   size: 120,
+                  //   color: Theme.of(context).colorScheme.primary,
+                  // ),
+                  FaIcon(
+                    FontAwesomeIcons.image,
                     size: 120,
-                    color: Theme.of(context).colorScheme.primary,
+                    color: Theme.of(context).colorScheme.primary
                   ),
                   const SizedBox(height: 10),
                   Text(
@@ -689,7 +695,7 @@ class _ChangeFormatScreenState extends State<ChangeFormatScreen>
                                         ),
                                         child: Row(
                                           children: [
-                                            Icon(Icons.delete_outline, size: 20, color: Colors.white),
+                                            FaIcon(FontAwesomeIcons.trashCan,size: 16,color: Colors.white,),
                                             SizedBox(width: 5),
                                             Text("Remove", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
                                           ],
@@ -711,9 +717,9 @@ class _ChangeFormatScreenState extends State<ChangeFormatScreen>
                                         ),
                                         child: Row(
                                           children: [
-                                            Icon(Icons.edit_outlined, size: 20, color: Colors.white),
+                                            FaIcon(FontAwesomeIcons.pen,size: 15,color: Colors.white,),
                                             SizedBox(width: 5),
-                                            Text("Edit ", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                                            Text("Edit  ", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
                                           ],
                                         ),
                                       ),

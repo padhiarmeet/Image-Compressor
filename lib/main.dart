@@ -10,6 +10,7 @@ import 'package:image_compressor/frontend/layout_page_screen.dart';
 import 'package:image_compressor/theme/theme.dart';
 import 'controllers/compressImageController.dart';
 import 'controllers/themeController.dart';
+import 'controllers/reward_controller.dart';
 
 void main() async{
   WidgetsFlutterBinding.ensureInitialized();
@@ -21,7 +22,7 @@ void main() async{
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
+
   @override
   Widget build(BuildContext context) {
 
@@ -29,11 +30,13 @@ class MyApp extends StatelessWidget {
     final pageViewController = Get.put(PageViewController());
     final databaseController = Get.put(DatabaseController());
     final imageController = Get.put(ImageController());
+    final rewardController = Get.put(RewardController());
 
     return GetMaterialApp(
       title: 'Flutter Demo',
       theme: lightMode,
       darkTheme: darkMode,
+      debugShowCheckedModeBanner: false,
       themeMode: themeController.isDarkMode? ThemeMode.dark : ThemeMode.light ,
       home: LayoutScreen(),
       // home: CarouselExampleApp(),

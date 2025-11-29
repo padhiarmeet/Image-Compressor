@@ -30,8 +30,13 @@ class PdfController extends GetxController{
       pdf.addPage(
           pw.Page(
             pageFormat: PdfPageFormat.a4,
-            build:(pw.Context context) => pw.Center(
-                child: pw.Image(image,fit: pw.BoxFit.contain)
+            build:(pw.Context context) => pw.Container(
+              width: double.infinity,
+              height: double.infinity,
+              child: pw.Image(
+                image,
+                fit: pw.BoxFit.cover,
+              ),
             ), )
       );
 

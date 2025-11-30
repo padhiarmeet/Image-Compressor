@@ -58,7 +58,59 @@ class CompressedImage {
   }
 }
 
+enum SnackbarType { success, error, warning, info }
+
 class ImageModel extends GetxController {
+  void _showStyledSnackbar({
+    required String title,
+    required String message,
+    required SnackbarType type,
+  }) {
+    Color iconColor;
+    IconData icon;
+
+    switch (type) {
+      case SnackbarType.success:
+        iconColor = Colors.green;
+        icon = Icons.check_circle_outline;
+        break;
+      case SnackbarType.error:
+        iconColor = Colors.red;
+        icon = Icons.error_outline;
+        break;
+      case SnackbarType.warning:
+        iconColor = Colors.orange;
+        icon = Icons.warning_amber_rounded;
+        break;
+      case SnackbarType.info:
+        iconColor = Get.theme.colorScheme.primary;
+        icon = Icons.info_outline;
+        break;
+    }
+
+    Get.snackbar(
+      title,
+      message,
+      backgroundColor: Get.theme.colorScheme.surface,
+      colorText: Get.theme.colorScheme.onSurface,
+      snackPosition: SnackPosition.BOTTOM,
+      margin: const EdgeInsets.all(16),
+      borderRadius: 12,
+      icon: Icon(icon, color: iconColor, size: 28),
+      shouldIconPulse: true,
+      boxShadows: [
+        BoxShadow(
+          color: Colors.black.withOpacity(0.1),
+          blurRadius: 10,
+          offset: const Offset(0, 4),
+        ),
+      ],
+      duration: const Duration(seconds: 3),
+      isDismissible: true,
+      forwardAnimationCurve: Curves.easeOutBack,
+    );
+  }
+
   final RxList<CompressedImage> _originalImages = <CompressedImage>[].obs;
   final RxList<CompressedImage> _compressImages = <CompressedImage>[].obs;
 
@@ -140,12 +192,10 @@ class ImageModel extends GetxController {
     PermissionStatus status = await Permission.photos.request();
 
     if (status.isDenied || status.isPermanentlyDenied) {
-      Get.snackbar(
-        'Storage permission Required',
-        'Permission is denied',
-        backgroundColor: Colors.red[300],
-        colorText: Colors.black,
-        snackPosition: SnackPosition.BOTTOM,
+      _showStyledSnackbar(
+        title: 'Storage permission Required',
+        message: 'Permission is denied',
+        type: SnackbarType.error,
       );
       return;
     }
@@ -215,8 +265,7 @@ class ImageModel extends GetxController {
                           ),
                           padding: EdgeInsets.all(16),
                         ),
-                        child:
-                        Icon(
+                        child: Icon(
                           Icons.camera_alt_outlined,
                           size: 28,
                           color: theme.colorScheme.primary,
@@ -233,11 +282,13 @@ class ImageModel extends GetxController {
                     children: [
                       ElevatedButton(
                         onPressed: () async {
-                          final List<XFile> images = await picker.pickMultiImage();
+                          final List<XFile> images = await picker
+                              .pickMultiImage();
                           if (images.isNotEmpty) {
                             int maxImages = 5;
                             try {
-                              maxImages = Get.find<RewardController>().imageLimit.value;
+                              maxImages =
+                                  Get.find<RewardController>().imageLimit.value;
                             } catch (e) {
                               maxImages = 5;
                             }
@@ -255,15 +306,20 @@ class ImageModel extends GetxController {
                                   ),
                                   title: Row(
                                     children: [
-                                      Icon(Icons.image_outlined, color: Colors.blue, size: 24),
+                                      Icon(
+                                        Icons.image_outlined,
+                                        color: Colors.blue,
+                                        size: 24,
+                                      ),
                                       SizedBox(width: 8),
                                       Expanded(
                                         child: Text(
                                           'Image Limit Reached',
                                           style: TextStyle(
-                                              fontSize: 18,
-                                              fontWeight: FontWeight.bold,
-                                              color: theme.colorScheme.onBackground
+                                            fontSize: 18,
+                                            fontWeight: FontWeight.bold,
+                                            color:
+                                                theme.colorScheme.onBackground,
                                           ),
                                         ),
                                       ),
@@ -271,7 +327,8 @@ class ImageModel extends GetxController {
                                   ),
                                   content: Column(
                                     mainAxisSize: MainAxisSize.min,
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
                                       Text(
                                         'You\'ve selected ${images.length} images but your current limit is $maxImages.',
@@ -285,20 +342,30 @@ class ImageModel extends GetxController {
                                       Container(
                                         padding: EdgeInsets.all(12),
                                         decoration: BoxDecoration(
-                                          color: theme.colorScheme.primary.withOpacity(0.1),
-                                          borderRadius: BorderRadius.circular(8),
-                                          border: Border.all(color: theme.colorScheme.primary),
+                                          color: theme.colorScheme.primary
+                                              .withOpacity(0.1),
+                                          borderRadius: BorderRadius.circular(
+                                            8,
+                                          ),
+                                          border: Border.all(
+                                            color: theme.colorScheme.primary,
+                                          ),
                                         ),
                                         child: Row(
                                           children: [
-                                            Icon(Icons.card_giftcard, color: Colors.blue, size: 20),
+                                            Icon(
+                                              Icons.card_giftcard,
+                                              color: Colors.blue,
+                                              size: 20,
+                                            ),
                                             SizedBox(width: 8),
                                             Expanded(
                                               child: Text(
                                                 'Watch a short ad to unlock up to ${maxImages + 5} images!',
                                                 style: TextStyle(
                                                   fontSize: 13,
-                                                  color: theme.colorScheme.primary,
+                                                  color:
+                                                      theme.colorScheme.primary,
                                                   fontWeight: FontWeight.w500,
                                                 ),
                                               ),
@@ -318,7 +385,9 @@ class ImageModel extends GetxController {
                                           },
                                           child: Text(
                                             'Maybe Later',
-                                            style: TextStyle(color: Colors.grey[600]),
+                                            style: TextStyle(
+                                              color: Colors.grey[600],
+                                            ),
                                           ),
                                         ),
                                         Spacer(),
@@ -326,19 +395,26 @@ class ImageModel extends GetxController {
                                           onPressed: () {
                                             Get.back(result: true);
                                           },
-                                          icon: Icon(Icons.play_circle_filled, size: 20),
+                                          icon: Icon(
+                                            Icons.play_circle_filled,
+                                            size: 20,
+                                          ),
                                           label: Text('Watch Ad'),
                                           style: ElevatedButton.styleFrom(
                                             backgroundColor: Colors.blue,
                                             foregroundColor: Colors.white,
-                                            padding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                                            padding: EdgeInsets.symmetric(
+                                              horizontal: 20,
+                                              vertical: 12,
+                                            ),
                                             shape: RoundedRectangleBorder(
-                                              borderRadius: BorderRadius.circular(8),
+                                              borderRadius:
+                                                  BorderRadius.circular(8),
                                             ),
                                           ),
                                         ),
                                       ],
-                                    )
+                                    ),
                                   ],
                                 ),
                                 barrierDismissible: false,
@@ -349,28 +425,38 @@ class ImageModel extends GetxController {
                                 bool rewarded = false;
                                 try {
                                   final rc = Get.find<RewardController>();
-                                  rewarded = await rc.increaseLimitByWatchingAd();
+                                  rewarded = await rc
+                                      .increaseLimitByWatchingAd();
                                 } catch (e) {
                                   final rc = Get.put(RewardController());
-                                  rewarded = await rc.increaseLimitByWatchingAd();
+                                  rewarded = await rc
+                                      .increaseLimitByWatchingAd();
                                 }
 
                                 if (rewarded) {
                                   // Get updated limit after watching ad
                                   int newLimit = 10;
                                   try {
-                                    newLimit = Get.find<RewardController>().imageLimit.value;
+                                    newLimit = Get.find<RewardController>()
+                                        .imageLimit
+                                        .value;
                                   } catch (e) {
                                     newLimit = 10;
                                   }
-                                  selectedImages = images.take(newLimit).toList();
+                                  selectedImages = images
+                                      .take(newLimit)
+                                      .toList();
                                 } else {
                                   // Ad failed, use original limit
-                                  selectedImages = images.take(maxImages).toList();
+                                  selectedImages = images
+                                      .take(maxImages)
+                                      .toList();
                                 }
                               } else {
                                 // User chose "Maybe Later", use current limit
-                                selectedImages = images.take(maxImages).toList();
+                                selectedImages = images
+                                    .take(maxImages)
+                                    .toList();
                               }
 
                               // Add images after dialog handling is complete
@@ -378,7 +464,8 @@ class ImageModel extends GetxController {
                                 addOriginalImage(
                                   CompressedImage(
                                     filePath: oneImage.path,
-                                    originalSize: await oneImage.length() / 1024,
+                                    originalSize:
+                                        await oneImage.length() / 1024,
                                     compressedSize: 0,
                                     compressedAt: DateTime.now(),
                                     format: getImageFormat(oneImage.path),
@@ -387,7 +474,6 @@ class ImageModel extends GetxController {
                                 );
                               }
                               clearCompressedList();
-
                             } else {
                               // Within limit, add all images directly
                               Get.back(); // Close bottom sheet
@@ -396,7 +482,8 @@ class ImageModel extends GetxController {
                                 addOriginalImage(
                                   CompressedImage(
                                     filePath: oneImage.path,
-                                    originalSize: await oneImage.length() / 1024,
+                                    originalSize:
+                                        await oneImage.length() / 1024,
                                     compressedSize: 0,
                                     compressedAt: DateTime.now(),
                                     format: getImageFormat(oneImage.path),
@@ -454,12 +541,10 @@ class ImageModel extends GetxController {
   Future<void> compressImages() async {
     // Check if all images are already compressed
     if (areAllImagesCompressed()) {
-      Get.snackbar(
-        "Already Compressed",
-        "All images have already been compressed",
-        backgroundColor: Colors.orange[300],
-        colorText: Colors.black,
-        snackPosition: SnackPosition.BOTTOM,
+      _showStyledSnackbar(
+        title: "Already Compressed",
+        message: "All images have already been compressed",
+        type: SnackbarType.warning,
       );
       return;
     }
@@ -467,15 +552,20 @@ class ImageModel extends GetxController {
     _compressImages.clear();
 
     if (_originalImages.isEmpty) {
-      Get.snackbar("Error", "Please select images first",
-          snackPosition: SnackPosition.BOTTOM);
+      _showStyledSnackbar(
+        title: "Error",
+        message: "Please select images first",
+        type: SnackbarType.error,
+      );
       return;
     }
 
     final dir = await path_provider.getTemporaryDirectory();
 
     // Only compress images that haven't been compressed yet
-    final uncompressedImages = _originalImages.where((image) => !image.isCompressed).toList();
+    final uncompressedImages = _originalImages
+        .where((image) => !image.isCompressed)
+        .toList();
 
     for (var image in uncompressedImages) {
       final originalFile = File(image.filePath);
@@ -485,7 +575,8 @@ class ImageModel extends GetxController {
       final originalSizeKB = originalBytes.length / 1024;
 
       // Create compressed path
-      final targetPath = '${dir.path}/${DateTime.now().millisecondsSinceEpoch}_${image.filePath.split('/').last}';
+      final targetPath =
+          '${dir.path}/${DateTime.now().millisecondsSinceEpoch}_${image.filePath.split('/').last}';
 
       final XFile? result = await FlutterImageCompress.compressAndGetFile(
         image.filePath,
@@ -516,11 +607,17 @@ class ImageModel extends GetxController {
     }
 
     if (_compressImages.isEmpty) {
-      Get.snackbar("Compression Failed", "All images failed to compress",
-          snackPosition: SnackPosition.BOTTOM);
+      _showStyledSnackbar(
+        title: "Compression Failed",
+        message: "All images failed to compress",
+        type: SnackbarType.error,
+      );
     } else {
-      Get.snackbar("Success", "Images compressed successfully",
-          snackPosition: SnackPosition.BOTTOM);
+      _showStyledSnackbar(
+        title: "Success",
+        message: "Images compressed successfully",
+        type: SnackbarType.success,
+      );
     }
 
     // Reset the limit back to 5 after compression
@@ -537,12 +634,10 @@ class ImageModel extends GetxController {
   Future<void> compressToTargetSize(int targetSizeKB) async {
     // Check if all images are already compressed
     if (areAllImagesCompressed()) {
-      Get.snackbar(
-        'Already Compressed',
-        'All images have already been compressed',
-        backgroundColor: Colors.orange[300],
-        colorText: Colors.black,
-        snackPosition: SnackPosition.BOTTOM,
+      _showStyledSnackbar(
+        title: 'Already Compressed',
+        message: 'All images have already been compressed',
+        type: SnackbarType.warning,
       );
       return;
     }
@@ -550,10 +645,10 @@ class ImageModel extends GetxController {
     _compressImages.clear();
 
     if (_originalImages.isEmpty) {
-      Get.snackbar(
-        'Error',
-        'Please select images first',
-        snackPosition: SnackPosition.BOTTOM,
+      _showStyledSnackbar(
+        title: 'Error',
+        message: 'Please select images first',
+        type: SnackbarType.error,
       );
       return;
     }
@@ -615,24 +710,21 @@ class ImageModel extends GetxController {
 
         // Mark the original image as compressed
         image.isCompressed = true;
-
-
       }
     }
 
     if (_compressImages.isEmpty) {
-      Get.snackbar(
-        'Compression Failed',
-        'Images could not be compressed to target size',
-        snackPosition: SnackPosition.BOTTOM,
+      _showStyledSnackbar(
+        title: 'Compression Failed',
+        message: 'Images could not be compressed to target size',
+        type: SnackbarType.error,
       );
-    }
-      else {
+    } else {
       final compressedCount = _compressImages.length;
-      Get.snackbar(
-        'Success',
-        '$compressedCount images compressed to ≤ $targetSizeKB KB',
-        snackPosition: SnackPosition.BOTTOM,
+      _showStyledSnackbar(
+        title: 'Success',
+        message: '$compressedCount images compressed to ≤ $targetSizeKB KB',
+        type: SnackbarType.success,
       );
     }
     try {
@@ -647,12 +739,10 @@ class ImageModel extends GetxController {
   Future<void> compressToTargetQuality(int targetQuality) async {
     // Check if all images are already compressed
     if (areAllImagesCompressed()) {
-      Get.snackbar(
-        'Already Compressed',
-        'All images have already been compressed',
-        backgroundColor: Colors.orange[300],
-        colorText: Colors.black,
-        snackPosition: SnackPosition.BOTTOM,
+      _showStyledSnackbar(
+        title: 'Already Compressed',
+        message: 'All images have already been compressed',
+        type: SnackbarType.warning,
       );
       return;
     }
@@ -660,20 +750,20 @@ class ImageModel extends GetxController {
     _compressImages.clear();
 
     if (_originalImages.isEmpty) {
-      Get.snackbar(
-        'Error',
-        'Please select images first',
-        snackPosition: SnackPosition.BOTTOM,
+      _showStyledSnackbar(
+        title: 'Error',
+        message: 'Please select images first',
+        type: SnackbarType.error,
       );
       return;
     }
 
     // Validate quality range
     if (targetQuality < 1 || targetQuality > 100) {
-      Get.snackbar(
-        'Invalid Quality',
-        'Quality must be between 1-100',
-        snackPosition: SnackPosition.BOTTOM,
+      _showStyledSnackbar(
+        title: 'Invalid Quality',
+        message: 'Quality must be between 1-100',
+        type: SnackbarType.warning,
       );
       return;
     }
@@ -724,17 +814,18 @@ class ImageModel extends GetxController {
     }
 
     if (_compressImages.isEmpty) {
-      Get.snackbar(
-        'Compression Failed',
-        'Images could not be compressed',
-        snackPosition: SnackPosition.BOTTOM,
+      _showStyledSnackbar(
+        title: 'Compression Failed',
+        message: 'Images could not be compressed',
+        type: SnackbarType.error,
       );
     } else {
       final compressedCount = _compressImages.length;
-      Get.snackbar(
-        'Success',
-        '$compressedCount images compressed at $targetQuality% quality',
-        snackPosition: SnackPosition.BOTTOM,
+      _showStyledSnackbar(
+        title: 'Success',
+        message:
+            '$compressedCount images compressed at $targetQuality% quality',
+        type: SnackbarType.success,
       );
     }
     try {
@@ -748,12 +839,10 @@ class ImageModel extends GetxController {
   //region METHOD FOR DOWNLOADING MULTIPLE IMAGES TO GALLERY
   Future<void> downloadImages() async {
     if (_compressImages.isEmpty) {
-      Get.snackbar(
-        'No Images',
-        'No compressed images to download',
-        backgroundColor: Colors.orange[300],
-        colorText: Colors.black,
-        snackPosition: SnackPosition.BOTTOM,
+      _showStyledSnackbar(
+        title: 'No Images',
+        message: 'No compressed images to download',
+        type: SnackbarType.warning,
       );
       return;
     }
@@ -761,12 +850,11 @@ class ImageModel extends GetxController {
     // Request storage permission
     PermissionStatus status = await Permission.photos.request();
     if (status.isDenied || status.isPermanentlyDenied) {
-      Get.snackbar(
-        'Storage Permission Required',
-        'Permission is denied. Please enable storage permission in settings.',
-        backgroundColor: Colors.red[300],
-        colorText: Colors.black,
-        snackPosition: SnackPosition.BOTTOM,
+      _showStyledSnackbar(
+        title: 'Storage Permission Required',
+        message:
+            'Permission is denied. Please enable storage permission in settings.',
+        type: SnackbarType.error,
       );
       return;
     }
@@ -820,30 +908,25 @@ class ImageModel extends GetxController {
       }
 
       if (successCount > 0) {
-        Get.snackbar(
-          'Download Complete',
-          '$successCount image${successCount == 1 ? '' : 's'} saved to gallery${failCount > 0 ? ' ($failCount failed)' : ''}',
-          backgroundColor: Colors.green[300],
-          colorText: Colors.black,
-          snackPosition: SnackPosition.BOTTOM,
+        _showStyledSnackbar(
+          title: 'Download Complete',
+          message:
+              '$successCount image${successCount == 1 ? '' : 's'} saved to gallery${failCount > 0 ? ' ($failCount failed)' : ''}',
+          type: SnackbarType.success,
         );
       } else {
-        Get.snackbar(
-          'Download Failed',
-          'Failed to save images to gallery',
-          backgroundColor: Colors.red[300],
-          colorText: Colors.black,
-          snackPosition: SnackPosition.BOTTOM,
+        _showStyledSnackbar(
+          title: 'Download Failed',
+          message: 'Failed to save images to gallery',
+          type: SnackbarType.error,
         );
       }
     } catch (e) {
       print(e);
-      Get.snackbar(
-        'Error',
-        'Failed to download images: $e',
-        backgroundColor: Colors.red[300],
-        colorText: Colors.black,
-        snackPosition: SnackPosition.BOTTOM,
+      _showStyledSnackbar(
+        title: 'Error',
+        message: 'Failed to download images: $e',
+        type: SnackbarType.error,
       );
     }
   }
@@ -854,12 +937,11 @@ class ImageModel extends GetxController {
     // Request storage permission
     PermissionStatus status = await Permission.photos.request();
     if (status.isDenied || status.isPermanentlyDenied) {
-      Get.snackbar(
-        'Storage Permission Required',
-        'Permission is denied. Please enable storage permission in settings.',
-        backgroundColor: Colors.red[300],
-        colorText: Colors.black,
-        snackPosition: SnackPosition.BOTTOM,
+      _showStyledSnackbar(
+        title: 'Storage Permission Required',
+        message:
+            'Permission is denied. Please enable storage permission in settings.',
+        type: SnackbarType.error,
       );
       return;
     }
@@ -876,12 +958,10 @@ class ImageModel extends GetxController {
       }
 
       if (file == null || !(await file.exists())) {
-        Get.snackbar(
-          'Error',
-          'File not found!',
-          backgroundColor: Colors.red[300],
-          colorText: Colors.black,
-          snackPosition: SnackPosition.BOTTOM,
+        _showStyledSnackbar(
+          title: 'Error',
+          message: 'File not found!',
+          type: SnackbarType.error,
         );
         return;
       }
@@ -898,29 +978,23 @@ class ImageModel extends GetxController {
       );
 
       if (result['isSuccess']) {
-        Get.snackbar(
-          'Download Complete',
-          'Image saved to gallery successfully!',
-          backgroundColor: Colors.green[300],
-          colorText: Colors.black,
-          snackPosition: SnackPosition.BOTTOM,
+        _showStyledSnackbar(
+          title: 'Download Complete',
+          message: 'Image saved to gallery successfully!',
+          type: SnackbarType.success,
         );
       } else {
-        Get.snackbar(
-          'Download Failed',
-          'Failed to save image to gallery',
-          backgroundColor: Colors.red[300],
-          colorText: Colors.black,
-          snackPosition: SnackPosition.BOTTOM,
+        _showStyledSnackbar(
+          title: 'Download Failed',
+          message: 'Failed to save image to gallery',
+          type: SnackbarType.error,
         );
       }
     } catch (e) {
-      Get.snackbar(
-        'Error',
-        'Failed to download image: $e',
-        backgroundColor: Colors.red[300],
-        colorText: Colors.black,
-        snackPosition: SnackPosition.BOTTOM,
+      _showStyledSnackbar(
+        title: 'Error',
+        message: 'Failed to download image: $e',
+        type: SnackbarType.error,
       );
     }
   }
@@ -937,10 +1011,10 @@ class ImageModel extends GetxController {
     final shareResult = await SharePlus.instance.share(params);
 
     if (shareResult.status == ShareResultStatus.success) {
-      Get.snackbar(
-        'Success',
-        'Image shared successfully !',
-        snackPosition: SnackPosition.BOTTOM,
+      _showStyledSnackbar(
+        title: 'Success',
+        message: 'Image shared successfully !',
+        type: SnackbarType.success,
       );
     }
   }
@@ -957,10 +1031,10 @@ class ImageModel extends GetxController {
         file = await asset?.file;
       } catch (e) {
         debugPrint("Error resolving content URI for sharing: $e");
-        Get.snackbar(
-          'Error',
-          'Unable to share this file',
-          snackPosition: SnackPosition.BOTTOM,
+        _showStyledSnackbar(
+          title: 'Error',
+          message: 'Unable to share this file',
+          type: SnackbarType.error,
         );
         return;
       }
@@ -969,10 +1043,10 @@ class ImageModel extends GetxController {
     }
 
     if (file == null || !(await file.exists())) {
-      Get.snackbar(
-        'Error',
-        'File not found',
-        snackPosition: SnackPosition.BOTTOM,
+      _showStyledSnackbar(
+        title: 'Error',
+        message: 'File not found',
+        type: SnackbarType.error,
       );
       return;
     }
@@ -984,10 +1058,10 @@ class ImageModel extends GetxController {
     final shareResult = await SharePlus.instance.share(params);
 
     if (shareResult.status == ShareResultStatus.success) {
-      Get.snackbar(
-        'Success',
-        'Image shared successfully!',
-        snackPosition: SnackPosition.BOTTOM,
+      _showStyledSnackbar(
+        title: 'Success',
+        message: 'Image shared successfully!',
+        type: SnackbarType.success,
       );
     }
   }

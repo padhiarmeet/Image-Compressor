@@ -1,6 +1,6 @@
-import 'dart:io';
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 import 'package:image_compressor/controllers/themeController.dart';
@@ -17,16 +17,37 @@ class LayoutScreen extends StatefulWidget {
   State<LayoutScreen> createState() => _LayoutScreenState();
 }
 
-class _LayoutScreenState extends State<LayoutScreen> with TickerProviderStateMixin {
+class _LayoutScreenState extends State<LayoutScreen>
+    with TickerProviderStateMixin {
   bool isDarkMode = true;
 
   ThemeController themeController = Get.find<ThemeController>();
   PageViewController pageViewController = Get.find<PageViewController>();
 
+  @override
+  void initState() {
+    super.initState();
+    _checkWidgetLaunch();
+  }
+
+  Future<void> _checkWidgetLaunch() async {
+    const platform = MethodChannel('com.meet.imagecompressor/widget');
+
+    try {
+      final int pageIndex = await platform.invokeMethod('getStartPage');
+      if (pageIndex >= 0 && pageIndex <= 3) {
+        // Small delay to ensure page controller is initialized
+        Future.delayed(const Duration(milliseconds: 300), () {
+          pageViewController.goToPage(pageIndex);
+        });
+      }
+    } catch (e) {
+      print('Error getting start page: $e');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-
     isDarkMode = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
@@ -51,30 +72,27 @@ class _LayoutScreenState extends State<LayoutScreen> with TickerProviderStateMix
                     Container(
                       width: 48,
                       height: 48,
-                      child: Image.asset('assets/app_icon/app_iconV3.png')
+                      child: Image.asset('assets/app_icon/app_iconV3.png'),
                     ),
                     const SizedBox(width: 12),
-                    Obx(
-
-                      () {
-                        String title = pageViewController.currentPageIndex == 0
-                            ? 'Compressor'
-                            : pageViewController.currentPageIndex == 1
-                            ? 'History'
-                            : pageViewController.currentPageIndex == 2
-                            ? 'PDF Maker'
-                            : 'Change Format';
-                        return Text(
-                          title,
-                          style: TextStyle(
-                            color: Theme.of(context).colorScheme.onBackground,
-                            fontSize: 24,
-                            fontWeight: FontWeight.w700,
-                            letterSpacing: -0.5,
-                          ),
-                        );
-                      },
-                    ),
+                    Obx(() {
+                      String title = pageViewController.currentPageIndex == 0
+                          ? 'Compressor'
+                          : pageViewController.currentPageIndex == 1
+                          ? 'History'
+                          : pageViewController.currentPageIndex == 2
+                          ? 'PDF Maker'
+                          : 'Change Format';
+                      return Text(
+                        title,
+                        style: TextStyle(
+                          color: Theme.of(context).colorScheme.onBackground,
+                          fontSize: 24,
+                          fontWeight: FontWeight.w700,
+                          letterSpacing: -0.5,
+                        ),
+                      );
+                    }),
                   ],
                 ),
               ),
@@ -89,7 +107,7 @@ class _LayoutScreenState extends State<LayoutScreen> with TickerProviderStateMix
                       borderRadius: BorderRadius.circular(10),
                     ),
                     child: Obx(
-                          () => IconButton(
+                      () => IconButton(
                         onPressed: () {
                           themeController.toggleTheme();
                         },
@@ -115,17 +133,17 @@ class _LayoutScreenState extends State<LayoutScreen> with TickerProviderStateMix
       body: Column(
         children: [
           Expanded(
-              child: PageView(
-                controller: pageViewController.pageController,
-                onPageChanged: pageViewController.onPageChanged,
-                children: [
-                  Homepage(),
-                  HistoryScreen(),
-                  PdfScreen(),
-                  ChangeFormatScreen(),
-                ],
-              )
-          )
+            child: PageView(
+              controller: pageViewController.pageController,
+              onPageChanged: pageViewController.onPageChanged,
+              children: [
+                Homepage(),
+                HistoryScreen(),
+                PdfScreen(),
+                ChangeFormatScreen(),
+              ],
+            ),
+          ),
         ],
       ),
       bottomNavigationBar: _buildBottomNavigationBar(context),
@@ -148,7 +166,7 @@ class _LayoutScreenState extends State<LayoutScreen> with TickerProviderStateMix
             ),
           ),
           child: Obx(
-            ()=> BottomNavigationBar(
+            () => BottomNavigationBar(
               backgroundColor: Colors.transparent,
               elevation: 0,
               type: BottomNavigationBarType.shifting,
@@ -174,17 +192,17 @@ class _LayoutScreenState extends State<LayoutScreen> with TickerProviderStateMix
                 ),
                 BottomNavigationBarItem(
                   activeIcon: Icon(Icons.history_rounded),
-                  icon: FaIcon(FontAwesomeIcons.clockRotateLeft,size: 20,),
+                  icon: FaIcon(FontAwesomeIcons.clockRotateLeft, size: 20),
                   label: 'History',
                 ),
                 BottomNavigationBarItem(
-                  activeIcon: FaIcon(FontAwesomeIcons.solidFilePdf,size: 18,),
-                  icon: FaIcon(FontAwesomeIcons.filePdf,size: 20,),
+                  activeIcon: FaIcon(FontAwesomeIcons.solidFilePdf, size: 18),
+                  icon: FaIcon(FontAwesomeIcons.filePdf, size: 20),
                   label: 'Convert to PDF',
                 ),
                 BottomNavigationBarItem(
                   activeIcon: Icon(Icons.edit_document),
-                  icon: FaIcon(FontAwesomeIcons.filePen,size: 20,),
+                  icon: FaIcon(FontAwesomeIcons.filePen, size: 20),
                   label: 'Change Format',
                 ),
               ],
@@ -194,5 +212,6 @@ class _LayoutScreenState extends State<LayoutScreen> with TickerProviderStateMix
       ),
     );
   }
-//endregion
+
+  //endregion
 }

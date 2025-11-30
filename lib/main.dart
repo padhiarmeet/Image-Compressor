@@ -12,7 +12,7 @@ import 'controllers/compressImageController.dart';
 import 'controllers/themeController.dart';
 import 'controllers/reward_controller.dart';
 
-void main() async{
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await GetStorage.init();
   await MobileAds.instance.initialize();
@@ -22,10 +22,8 @@ void main() async{
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-
   @override
   Widget build(BuildContext context) {
-
     final themeController = Get.put(ThemeController());
     final pageViewController = Get.put(PageViewController());
     final databaseController = Get.put(DatabaseController());
@@ -37,10 +35,9 @@ class MyApp extends StatelessWidget {
       theme: lightMode,
       darkTheme: darkMode,
       debugShowCheckedModeBanner: false,
-      themeMode: themeController.isDarkMode? ThemeMode.dark : ThemeMode.light ,
+      themeMode: themeController.isDarkMode ? ThemeMode.dark : ThemeMode.light,
       home: LayoutScreen(),
       // home: CarouselExampleApp(),
     );
   }
 }
-

@@ -23,10 +23,7 @@ class _BannerAdWidgetState extends State<BannerAdWidget> {
   void _loadAd() {
     _bannerAd = BannerAd(
       adUnitId: widget.adUnitId,
-      request: const AdRequest(
-        // Add your test device ID here (get it from logs)
-        // Example: testDevices: ['YOUR_DEVICE_ID_HERE'],
-      ),
+      request: const AdRequest(),
       size: AdSize.banner,
       listener: BannerAdListener(
         onAdLoaded: (ad) {
@@ -38,7 +35,7 @@ class _BannerAdWidgetState extends State<BannerAdWidget> {
         onAdFailedToLoad: (ad, error) {
           debugPrint('Ad failed to load: ${error.code} - ${error.message}');
           ad.dispose();
-          // Optional: Retry loading after a delay
+
           Future.delayed(const Duration(seconds: 5), _loadAd);
         },
       ),

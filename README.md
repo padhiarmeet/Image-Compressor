@@ -59,6 +59,15 @@ A powerful yet simple **Flutter app** that helps users compress, convert, and re
 
 ---
 
+## 📱 Screenshots
+
+| | | |
+|:---:|:---:|:---:|
+| ![Screenshot 1](deployment_assets/app_images/one.jpg) | ![Screenshot 2](deployment_assets/app_images/two.jpg) | ![Screenshot 3](deployment_assets/app_images/three.jpg) |
+| ![Screenshot 4](deployment_assets/app_images/four.jpg) | ![Screenshot 5](deployment_assets/app_images/five.jpg) | ![Screenshot 6](deployment_assets/app_images/six.jpg) |
+
+---
+
 ## 🎯 Why This App?
 
 Most students and users waste time figuring out the correct dimensions, quality, or formats while uploading images for exams or forms. This app automates that — **just pick your use case and go**.
@@ -83,28 +92,6 @@ Most students and users waste time figuring out the correct dimensions, quality,
 | **Monetization** | google_mobile_ads |
 | **Home Widget** | home_widget |
 | **UI Components** | flutter_card_swiper, dotted_border, font_awesome_flutter |
-
----
-
-## 📱 Screenshots
-
-*Coming Soon*
-
----
-
-## 🧪 Project Status
-
-| Feature | Status |
-|---------|--------|
-| Quick Compress | ✅ Complete |
-| Advanced Compression | ✅ Complete |
-| Format Conversion | ✅ Complete |
-| Image to PDF | ✅ Complete |
-| History Screen | ✅ Complete |
-| Theme Support | ✅ Complete |
-| Android Widget | ✅ Complete |
-| Smart Exam Selector | 🛠️ Coming Soon |
-| iOS Widget | 🛠️ Planned |
 
 ---
 
@@ -162,32 +149,6 @@ lib/
 ├── theme/                    # App themes
 └── adMob/                    # Ad integration
 ```
-
----
-
-## 🤝 Contributing
-
-Contributions are welcome! Please feel free to submit a Pull Request.
-
-1. Fork the project
-2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
-
----
-
-## 📄 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
----
-
-## 👨‍💻 Author
-
-**Armeet Padhi**
-
-- GitHub: [@padhiarmeet](https://github.com/padhiarmeet)
 
 ---
 

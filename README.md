@@ -1,6 +1,6 @@
 # 📱 Image Compressor App
 
-![Image Compressor App Banner](development_assets/banner_1.jpg)
+![Image Compressor App Banner](deployment_assets/banner_1.jpg)
 
 A powerful yet simple **Flutter app** that helps users compress, convert, and resize images for various official purposes like exam forms, government documents, or passport photos — built with 💙 Flutter and 🔧 GetX for fast and responsive performance.
 

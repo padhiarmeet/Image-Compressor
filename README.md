@@ -1,5 +1,7 @@
 # 📱 Image Compressor App
 
+![Image Compressor App Banner](development_assets/banner_1.jpg)
+
 A powerful yet simple **Flutter app** that helps users compress, convert, and resize images for various official purposes like exam forms, government documents, or passport photos — built with 💙 Flutter and 🔧 GetX for fast and responsive performance.
 
 > Designed with **simplicity and accessibility** in mind.
@@ -51,15 +53,14 @@ Most students and users waste time figuring out the correct dimensions, quality,
 ## 🧪 Status
 
 ✅ Core Features Implemented  
-🛠️ Smart Exam Selector: *Coming Soon* 
-🧼 UI Enhancements for Accessibility: *Ongoing*
+🛠️ Smart Exam Selector: *Coming Soon* 🧼 UI Enhancements for Accessibility: *Ongoing*
 
 ---
 
 ## 💻 Installation
 
 ```bash
-git clone https://github.com/your-username/image-compressor-app.git
+git clone [https://github.com/your-username/image-compressor-app.git](https://github.com/your-username/image-compressor-app.git)
 cd image-compressor-app
 flutter pub get
 flutter run

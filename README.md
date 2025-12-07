@@ -1,4 +1,4 @@
-# 📱 Image Compressor App
+# 📱 Image Compressor
 
 ![Image Compressor App Banner](deployment_assets/banner_1.jpg)
 
@@ -8,26 +8,54 @@ A powerful yet simple **Flutter app** that helps users compress, convert, and re
 
 ---
 
-## 🚀 Features
+## ✨ Features
 
-- 📸 **Quick Compress Options**
-  - Resize images to standard sizes
+### 📸 Quick Compress
+- **One-tap compression** with preset size options (50KB, 100KB, 200KB)
+- **Custom size input** for specific requirements
+- Real-time preview with before/after file size comparison
+- Swipeable card carousel for multi-image selection
 
-- 📉 **Advanced Compression**
-  - Customize image **quality**, **format**, **size**, and **resolution**
+### 🛠️ Advanced Compression
+- Fine-tune **quality** (1-100%)
+- Adjust **resolution** (width × height)
+- Select output **format** (JPG, PNG, WEBP)
+- Custom target **file size** with automatic optimization
 
-- 🔁 **Image Format Conversion**
-  - Convert between **JPG**, **PNG**, **WEBP**, and more
+### 🔄 Format Conversion
+- Convert images between **JPG**, **PNG**, **WEBP**, and more
+- Batch convert multiple images at once
+- Visual format preview with file type indicators
+- Maintains image quality during conversion
 
-- 📄 **Convert to PDF**
-  - Select multiple images and instantly convert them to a single PDF
+### 📄 Image to PDF
+- Convert **multiple images** to a single PDF document
+- Arrange image order before conversion
+- High-quality PDF output
+- Direct save to gallery or share
 
-- 📂 **Save & Share**
-  - Download or share compressed images and PDFs instantly
+### 📂 History & Management
+- View all **previously compressed** images
+- **Download** processed images to gallery
+- **Share** directly to other apps
+- Delete individual entries or clear all
 
-- 🧠 **Smart Exam Form Selector** *(Coming Soon)*
-  - Select your exam (e.g., UPSC, NEET, SSC)
-  - Automatically apply required image size and format for that exam!
+### 🎨 Theme Support
+- **Dark Mode** and **Light Mode** support
+- Smooth theme transitions
+- Persistent theme preference
+
+### 📱 Android Home Widget
+- **Quick Compress** shortcut
+- **PDF Conversion** shortcut
+- **Format Change** shortcut
+- **History** access
+- Stylish glassmorphism design
+
+### 💾 Save & Share
+- Save compressed images directly to **device gallery**
+- Share via any installed app (WhatsApp, Email, etc.)
+- Batch download and share options
 
 ---
 
@@ -39,28 +67,130 @@ Most students and users waste time figuring out the correct dimensions, quality,
 
 ---
 
-## 🛠 Tech Stack
+## 🛠️ Tech Stack
 
-- **Flutter** – For cross-platform mobile development
-- **GetX** – For state management and navigation
-- **flutter_image_compress** – For high-quality image compression
-- **image_picker** – To pick images from the device gallery/camera
-- **pdf** – To convert images into PDFs
-- **permission_handler**, **share_plus**, etc.
+| Category | Technology |
+|----------|------------|
+| **Framework** | Flutter |
+| **State Management** | GetX |
+| **Image Compression** | flutter_image_compress |
+| **Image Picker** | image_picker, photo_manager |
+| **PDF Generation** | pdf |
+| **Local Storage** | sqflite, get_storage |
+| **Gallery Saver** | image_gallery_saver_plus |
+| **Sharing** | share_plus |
+| **Permissions** | permission_handler |
+| **Monetization** | google_mobile_ads |
+| **Home Widget** | home_widget |
+| **UI Components** | flutter_card_swiper, dotted_border, font_awesome_flutter |
 
 ---
 
-## 🧪 Status
+## 📱 Screenshots
 
-✅ Core Features Implemented  
-🛠️ Smart Exam Selector: *Coming Soon* 🧼 UI Enhancements for Accessibility: *Ongoing*
+*Coming Soon*
 
 ---
 
-## 💻 Installation
+## 🧪 Project Status
+
+| Feature | Status |
+|---------|--------|
+| Quick Compress | ✅ Complete |
+| Advanced Compression | ✅ Complete |
+| Format Conversion | ✅ Complete |
+| Image to PDF | ✅ Complete |
+| History Screen | ✅ Complete |
+| Theme Support | ✅ Complete |
+| Android Widget | ✅ Complete |
+| Smart Exam Selector | 🛠️ Coming Soon |
+| iOS Widget | 🛠️ Planned |
+
+---
+
+## 🚀 Getting Started
+
+### Prerequisites
+- Flutter SDK ^3.8.1
+- Android Studio / VS Code
+- Android device or emulator
+
+### Installation
 
 ```bash
-git clone [https://github.com/your-username/image-compressor-app.git](https://github.com/your-username/image-compressor-app.git)
-cd image-compressor-app
+# Clone the repository
+git clone https://github.com/padhiarmeet/Image-Compressor.git
+
+# Navigate to project directory
+cd Image-Compressor
+
+# Install dependencies
 flutter pub get
+
+# Run the app
 flutter run
+```
+
+### Build APK
+
+```bash
+flutter build apk --release
+```
+
+---
+
+## 📁 Project Structure
+
+```
+lib/
+├── main.dart                 # App entry point
+├── controllers/              # GetX controllers
+│   ├── compressImageController.dart
+│   ├── database_controller.dart
+│   ├── format_change_view_controller.dart
+│   ├── pdf_view_controller.dart
+│   ├── themeController.dart
+│   └── reward_controller.dart
+├── frontend/                 # UI screens
+│   ├── homePage.dart         # Main compression screen
+│   ├── formate_change_screen.dart
+│   ├── pdf_screen.dart
+│   ├── history_screen.dart
+│   └── layout_page_screen.dart
+├── models/                   # Data models
+├── services/                 # Business logic
+├── theme/                    # App themes
+└── adMob/                    # Ad integration
+```
+
+---
+
+## 🤝 Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+1. Fork the project
+2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
+
+---
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+---
+
+## 👨‍💻 Author
+
+**Armeet Padhi**
+
+- GitHub: [@padhiarmeet](https://github.com/padhiarmeet)
+
+---
+
+## ⭐ Show Your Support
+
+Give a ⭐ if this project helped you!

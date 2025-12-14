@@ -1,12 +1,17 @@
 import 'dart:io';
 import 'dart:typed_data';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image/image.dart' as img;
+import 'package:image_gallery_saver_plus/image_gallery_saver_plus.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:image_compressor/controllers/compressImageController.dart';
 import 'package:image_compressor/models/compressImageModel.dart';
+import 'package:image_compressor/utils/permission_helper.dart';
+
+enum SnackbarType { success, error, warning, info }
 
 class FormatChangeController extends GetxController {
   RxList<File> convertedFiles = <File>[].obs;
@@ -16,6 +21,56 @@ class FormatChangeController extends GetxController {
 
   // Supported formats
   final List<String> supportedFormats = ['jpg', 'png', 'webp', 'bmp'];
+
+  void _showStyledSnackbar({
+    required String title,
+    required String message,
+    required SnackbarType type,
+  }) {
+    Color iconColor;
+    IconData icon;
+
+    switch (type) {
+      case SnackbarType.success:
+        iconColor = Colors.green;
+        icon = Icons.check_circle_outline;
+        break;
+      case SnackbarType.error:
+        iconColor = Colors.red;
+        icon = Icons.error_outline;
+        break;
+      case SnackbarType.warning:
+        iconColor = Colors.orange;
+        icon = Icons.warning_amber_rounded;
+        break;
+      case SnackbarType.info:
+        iconColor = Get.theme.colorScheme.primary;
+        icon = Icons.info_outline;
+        break;
+    }
+
+    Get.snackbar(
+      title,
+      message,
+      backgroundColor: Get.theme.colorScheme.surface,
+      colorText: Get.theme.colorScheme.onSurface,
+      snackPosition: SnackPosition.BOTTOM,
+      margin: const EdgeInsets.all(16),
+      borderRadius: 12,
+      icon: Icon(icon, color: iconColor, size: 28),
+      shouldIconPulse: true,
+      boxShadows: [
+        BoxShadow(
+          color: Colors.black.withOpacity(0.1),
+          blurRadius: 10,
+          offset: const Offset(0, 4),
+        ),
+      ],
+      duration: const Duration(seconds: 3),
+      isDismissible: true,
+      forwardAnimationCurve: Curves.easeOutBack,
+    );
+  }
 
   // Convert images to selected format
   Future<void> convertToFormat(String targetFormat) async {
@@ -27,10 +82,10 @@ class FormatChangeController extends GetxController {
       final images = imageController.getOriginalList();
 
       if (images.isEmpty) {
-        Get.snackbar(
-          'No Images',
-          'Please select images first',
-          snackPosition: SnackPosition.BOTTOM,
+        _showStyledSnackbar(
+          title: 'No Images',
+          message: 'Please select images first',
+          type: SnackbarType.warning,
         );
         return;
       }
@@ -49,10 +104,10 @@ class FormatChangeController extends GetxController {
         final image = img.decodeImage(bytes);
 
         if (image == null) {
-          Get.snackbar(
-            'Error',
-            'Failed to decode image: ${file.path.split('/').last}',
-            snackPosition: SnackPosition.BOTTOM,
+          _showStyledSnackbar(
+            title: 'Error',
+            message: 'Failed to decode image: ${file.path.split('/').last}',
+            type: SnackbarType.error,
           );
           continue;
         }
@@ -80,17 +135,18 @@ class FormatChangeController extends GetxController {
             extension = 'bmp';
             break;
           default:
-            Get.snackbar(
-              'Error',
-              'Unsupported format: $targetFormat',
-              snackPosition: SnackPosition.BOTTOM,
+            _showStyledSnackbar(
+              title: 'Error',
+              message: 'Unsupported format: $targetFormat',
+              type: SnackbarType.error,
             );
             continue;
         }
 
         // Save the converted file
         final timestamp = DateTime.now().millisecondsSinceEpoch;
-        final fileName = 'converted_${timestamp}_${imageFile.id ?? timestamp}.$extension';
+        final fileName =
+            'converted_${timestamp}_${imageFile.id ?? timestamp}.$extension';
         final convertedFile = File('${output.path}/$fileName');
 
         await convertedFile.writeAsBytes(encodedBytes);
@@ -99,23 +155,23 @@ class FormatChangeController extends GetxController {
 
       if (convertedFiles.isNotEmpty) {
         hasConvertedFiles.value = true;
-        Get.snackbar(
-          'Success',
-          '${convertedFiles.length} images converted to $targetFormat',
-          snackPosition: SnackPosition.BOTTOM,
+        _showStyledSnackbar(
+          title: 'Success',
+          message: '${convertedFiles.length} images converted to $targetFormat',
+          type: SnackbarType.success,
         );
       } else {
-        Get.snackbar(
-          'Error',
-          'No images were converted',
-          snackPosition: SnackPosition.BOTTOM,
+        _showStyledSnackbar(
+          title: 'Error',
+          message: 'No images were converted',
+          type: SnackbarType.error,
         );
       }
     } catch (e) {
-      Get.snackbar(
-        'Error',
-        'Failed to convert images: $e',
-        snackPosition: SnackPosition.BOTTOM,
+      _showStyledSnackbar(
+        title: 'Error',
+        message: 'Failed to convert images: $e',
+        type: SnackbarType.error,
       );
     } finally {
       isConverting.value = false;
@@ -124,92 +180,118 @@ class FormatChangeController extends GetxController {
 
   // Download single converted file
   Future<void> downloadFile(File file) async {
+    // Request storage permission based on Android version
+    PermissionStatus status = await PermissionHelper.requestStoragePermission();
+    if (status.isDenied || status.isPermanentlyDenied) {
+      _showStyledSnackbar(
+        title: 'Permission Denied',
+        message: 'Storage permission is required to download files',
+        type: SnackbarType.error,
+      );
+      return;
+    }
+
     try {
-      var status = await Permission.storage.request();
-      if (status.isDenied) {
-        Get.snackbar(
-          'Permission Denied',
-          'Storage permission is required to download files',
-          snackPosition: SnackPosition.BOTTOM,
+      if (!await file.exists()) {
+        _showStyledSnackbar(
+          title: 'Error',
+          message: 'File not found',
+          type: SnackbarType.error,
         );
         return;
       }
 
-      Directory? downloadsDirectory;
-      if (Platform.isAndroid) {
-        downloadsDirectory = Directory('/storage/emulated/0/Download');
-        if (!await downloadsDirectory.exists()) {
-          downloadsDirectory = await getExternalStorageDirectory();
-        }
+      final bytes = await file.readAsBytes();
+      final fileName =
+          'converted_${DateTime.now().millisecondsSinceEpoch}_${file.path.split('/').last}';
+
+      final result = await ImageGallerySaverPlus.saveImage(
+        bytes,
+        name: fileName,
+        quality: 100,
+      );
+
+      if (result['isSuccess'] == true) {
+        _showStyledSnackbar(
+          title: 'Success',
+          message: 'Image saved to gallery',
+          type: SnackbarType.success,
+        );
       } else {
-        downloadsDirectory = await getApplicationDocumentsDirectory();
-      }
-
-      if (downloadsDirectory != null) {
-        final fileName = file.path.split('/').last;
-        final newPath = '${downloadsDirectory.path}/$fileName';
-
-        await file.copy(newPath);
-
-        Get.snackbar(
-          'Success',
-          'File downloaded to Downloads folder',
-          snackPosition: SnackPosition.BOTTOM,
+        _showStyledSnackbar(
+          title: 'Error',
+          message: 'Failed to save image to gallery',
+          type: SnackbarType.error,
         );
       }
     } catch (e) {
-      Get.snackbar(
-        'Error',
-        'Failed to download file: $e',
-        snackPosition: SnackPosition.BOTTOM,
+      _showStyledSnackbar(
+        title: 'Error',
+        message: 'Failed to download file: $e',
+        type: SnackbarType.error,
       );
     }
   }
 
   // Download all converted files
   Future<void> downloadAllFiles() async {
+    // Request storage permission based on Android version
+    PermissionStatus status = await PermissionHelper.requestStoragePermission();
+    if (status.isDenied || status.isPermanentlyDenied) {
+      _showStyledSnackbar(
+        title: 'Permission Denied',
+        message: 'Storage permission is required to download files',
+        type: SnackbarType.error,
+      );
+      return;
+    }
+
     try {
-      var status = await Permission.storage.request();
-      if (status.isDenied) {
-        Get.snackbar(
-          'Permission Denied',
-          'Storage permission is required to download files',
-          snackPosition: SnackPosition.BOTTOM,
+      int successCount = 0;
+      int failCount = 0;
+
+      for (File file in convertedFiles) {
+        if (!await file.exists()) {
+          failCount++;
+          continue;
+        }
+
+        final bytes = await file.readAsBytes();
+        final fileName =
+            'converted_${DateTime.now().millisecondsSinceEpoch}_${file.path.split('/').last}';
+
+        final result = await ImageGallerySaverPlus.saveImage(
+          bytes,
+          name: fileName,
+          quality: 100,
         );
-        return;
+
+        if (result['isSuccess'] == true) {
+          successCount++;
+        } else {
+          failCount++;
+        }
       }
 
-      Directory? downloadsDirectory;
-      if (Platform.isAndroid) {
-        downloadsDirectory = Directory('/storage/emulated/0/Download');
-        if (!await downloadsDirectory.exists()) {
-          downloadsDirectory = await getExternalStorageDirectory();
-        }
+      if (successCount > 0) {
+        _showStyledSnackbar(
+          title: 'Download Complete',
+          message:
+              '$successCount image${successCount == 1 ? '' : 's'} saved to gallery${failCount > 0 ? ' ($failCount failed)' : ''}',
+          type: SnackbarType.success,
+        );
       } else {
-        downloadsDirectory = await getApplicationDocumentsDirectory();
-      }
-
-      if (downloadsDirectory != null) {
-        int downloadCount = 0;
-        for (File file in convertedFiles) {
-          final fileName = file.path.split('/').last;
-          final newPath = '${downloadsDirectory.path}/$fileName';
-
-          await file.copy(newPath);
-          downloadCount++;
-        }
-
-        Get.snackbar(
-          'Success',
-          '$downloadCount files downloaded to Downloads folder',
-          snackPosition: SnackPosition.BOTTOM,
+        _showStyledSnackbar(
+          title: 'Download Failed',
+          message: 'Failed to save images to gallery',
+          type: SnackbarType.error,
         );
       }
     } catch (e) {
-      Get.snackbar(
-        'Error',
-        'Failed to download files: $e',
-        snackPosition: SnackPosition.BOTTOM,
+      _showStyledSnackbar(
+        title: 'Error',
+        message: 'Failed to download files: $e',
+        type: SnackbarType.error,
       );
     }
   }
@@ -218,16 +300,13 @@ class FormatChangeController extends GetxController {
   Future<void> shareFile(File file) async {
     try {
       await SharePlus.instance.share(
-        ShareParams(
-          files: [XFile(file.path)],
-          text: 'Sharing converted image',
-        ),
+        ShareParams(files: [XFile(file.path)], text: 'Sharing converted image'),
       );
     } catch (e) {
-      Get.snackbar(
-        'Error',
-        'Failed to share file: $e',
-        snackPosition: SnackPosition.BOTTOM,
+      _showStyledSnackbar(
+        title: 'Error',
+        message: 'Failed to share file: $e',
+        type: SnackbarType.error,
       );
     }
   }
@@ -235,25 +314,42 @@ class FormatChangeController extends GetxController {
   // Share all converted files
   Future<void> shareAllFiles() async {
     try {
-      List<XFile> xFiles = convertedFiles.map((file) => XFile(file.path)).toList();
+      List<XFile> xFiles = convertedFiles
+          .map((file) => XFile(file.path))
+          .toList();
       await SharePlus.instance.share(
-        ShareParams(
-          files: xFiles,
-          text: 'Sharing converted images',
-        ),
+        ShareParams(files: xFiles, text: 'Sharing converted images'),
       );
     } catch (e) {
-      Get.snackbar(
-        'Error',
-        'Failed to share files: $e',
-        snackPosition: SnackPosition.BOTTOM,
+      _showStyledSnackbar(
+        title: 'Error',
+        message: 'Failed to share files: $e',
+        type: SnackbarType.error,
       );
     }
   }
 
-  // Remove single file
+  // Remove single file and corresponding original image
   void removeFile(File file) {
+    // Get the index of the converted file being removed
+    int index = convertedFiles.indexOf(file);
+
+    // Remove the converted file
     convertedFiles.remove(file);
+
+    // Also remove the corresponding original image at the same index
+    if (index >= 0) {
+      try {
+        final imageController = Get.find<ImageController>();
+        final originalImages = imageController.getOriginalList();
+        if (index < originalImages.length) {
+          imageController.removeOriginalImage(originalImages[index]);
+        }
+      } catch (e) {
+        // ImageController not found, skip
+      }
+    }
+
     if (convertedFiles.isEmpty) {
       hasConvertedFiles.value = false;
     }

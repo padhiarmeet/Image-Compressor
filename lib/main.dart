@@ -31,7 +31,7 @@ class MyApp extends StatelessWidget {
     final rewardController = Get.put(RewardController());
 
     return GetMaterialApp(
-      title: 'Flutter Demo',
+      title: 'Image Compressor & PDF Maker',
       theme: lightMode,
       darkTheme: darkMode,
       debugShowCheckedModeBanner: false,

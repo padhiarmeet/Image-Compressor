@@ -10,6 +10,7 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:photo_manager/photo_manager.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:image_compressor/controllers/reward_controller.dart';
+import 'package:image_compressor/utils/permission_helper.dart';
 import 'package:path/path.dart' as path;
 
 class CompressedImage {
@@ -189,7 +190,7 @@ class ImageModel extends GetxController {
   final picker = ImagePicker();
 
   Future<void> pickImageFromGallery() async {
-    PermissionStatus status = await Permission.photos.request();
+    PermissionStatus status = await PermissionHelper.requestStoragePermission();
 
     if (status.isDenied || status.isPermanentlyDenied) {
       _showStyledSnackbar(
@@ -847,8 +848,8 @@ class ImageModel extends GetxController {
       return;
     }
 
-    // Request storage permission
-    PermissionStatus status = await Permission.photos.request();
+    // Request storage permission based on Android version
+    PermissionStatus status = await PermissionHelper.requestStoragePermission();
     if (status.isDenied || status.isPermanentlyDenied) {
       _showStyledSnackbar(
         title: 'Storage Permission Required',
@@ -934,8 +935,8 @@ class ImageModel extends GetxController {
 
   //region METHOD FOR DOWNLOADING IMAGE TO GALLERY {HISTORY PAGE}
   Future<void> downloadImage(String filePath) async {
-    // Request storage permission
-    PermissionStatus status = await Permission.photos.request();
+    // Request storage permission based on Android version
+    PermissionStatus status = await PermissionHelper.requestStoragePermission();
     if (status.isDenied || status.isPermanentlyDenied) {
       _showStyledSnackbar(
         title: 'Storage Permission Required',

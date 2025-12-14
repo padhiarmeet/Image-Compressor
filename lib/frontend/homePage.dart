@@ -712,7 +712,7 @@ class _HomepageState extends State<Homepage> with TickerProviderStateMixin {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Icon(
-                          Icons.save_alt_rounded,
+                          FontAwesomeIcons.download,
                           color: hasCompressedImages
                               ? Theme.of(context).colorScheme.primary
                               : Theme.of(

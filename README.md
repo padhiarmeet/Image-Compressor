@@ -52,6 +52,12 @@ A powerful yet simple **Flutter app** that helps users compress, convert, and re
 - **History** access
 - Stylish glassmorphism design
 
+### 🎭 Themed Monochromatic Icon
+- **Adaptive themed icon** that changes color based on your device's theme
+- Seamlessly blends with Android 13+ Material You dynamic theming
+- Supports both light and dark wallpaper-based color extraction
+- Modern, minimalist look that matches your device aesthetic
+
 ### 💾 Save & Share
 - Save compressed images directly to **device gallery**
 - Share via any installed app (WhatsApp, Email, etc.)
@@ -88,7 +94,7 @@ Most students and users waste time figuring out the correct dimensions, quality,
 | **Local Storage** | sqflite, get_storage |
 | **Gallery Saver** | image_gallery_saver_plus |
 | **Sharing** | share_plus |
-| **Permissions** | permission_handler |
+| **Permissions** | permission_handler, device_info_plus |
 | **Monetization** | google_mobile_ads |
 | **Home Widget** | home_widget |
 | **UI Components** | flutter_card_swiper, dotted_border, font_awesome_flutter |
@@ -145,7 +151,8 @@ lib/
 │   ├── history_screen.dart
 │   └── layout_page_screen.dart
 ├── models/                   # Data models
-├── services/                 # Business logic
+├── utils/                    # Utility helpers
+│   └── permission_helper.dart
 ├── theme/                    # App themes
 └── adMob/                    # Ad integration
 ```

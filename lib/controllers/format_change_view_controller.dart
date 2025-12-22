@@ -355,6 +355,19 @@ class FormatChangeController extends GetxController {
     }
   }
 
+  // Remove converted image by index (used when removing original image)
+  void removeConvertedImageAtIndex(int index) {
+    if (index >= 0 && index < convertedFiles.length) {
+      convertedFiles.removeAt(index);
+    }
+
+    // If we have fewer converted files than the index implies (e.g. wasn't converted yet),
+    // or if we just removed the last one, check if empty
+    if (convertedFiles.isEmpty) {
+      hasConvertedFiles.value = false;
+    }
+  }
+
   // Clear all converted files
   void clearConvertedFiles() {
     convertedFiles.clear();

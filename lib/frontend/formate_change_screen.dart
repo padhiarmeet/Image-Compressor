@@ -79,7 +79,10 @@ class _ChangeFormatScreenState extends State<ChangeFormatScreen>
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
           child: Obx(() {
-            RxBool hasOriginalImages = imageController.getOriginalList().isNotEmpty.obs;
+            RxBool hasOriginalImages = imageController
+                .getOriginalList()
+                .isNotEmpty
+                .obs;
 
             return Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -100,16 +103,22 @@ class _ChangeFormatScreenState extends State<ChangeFormatScreen>
                   _buildInstructions(context),
                   Spacer(),
                   Center(
-                      child: BannerAdWidget(adUnitId: "ca-app-pub-3940256099942544/6300978111")
+                    child: BannerAdWidget(
+                      adUnitId: "ca-app-pub-9176383426179540/4427910768",
+                    ),
                   ),
                 ],
 
                 Column(
                   children: [
-                    if (hasOriginalImages.value && !formatController.hasConvertedFiles.value)
+                    if (hasOriginalImages.value &&
+                        !formatController.hasConvertedFiles.value)
                       Container(
                         width: double.infinity,
-                        margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                        margin: const EdgeInsets.symmetric(
+                          horizontal: 20,
+                          vertical: 10,
+                        ),
                         child: Column(
                           children: [
                             Row(
@@ -117,49 +126,99 @@ class _ChangeFormatScreenState extends State<ChangeFormatScreen>
                                 Expanded(
                                   child: Container(
                                     margin: const EdgeInsets.only(right: 5),
-                                    child: Obx(() => ElevatedButton.icon(
-                                      onPressed: hasOriginalImages.value && !formatController.isConverting.value
-                                          ? () => formatController.convertToFormat('jpg')
-                                          : null,
-                                      icon: formatController.isConverting.value && formatController.selectedFormat.value == 'jpg'
-                                          ? SizedBox(
-                                        width: 16,
-                                        height: 16,
-                                        child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
-                                      )
-                                          : FaIcon(FontAwesomeIcons.image,size: 16),
-                                      label: Text('Convert to JPG'),
-                                      style: ElevatedButton.styleFrom(
-                                        padding: const EdgeInsets.symmetric(vertical: 15),
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.circular(12),
+                                    child: Obx(
+                                      () => ElevatedButton.icon(
+                                        onPressed:
+                                            hasOriginalImages.value &&
+                                                !formatController
+                                                    .isConverting
+                                                    .value
+                                            ? () => formatController
+                                                  .convertToFormat('jpg')
+                                            : null,
+                                        icon:
+                                            formatController
+                                                    .isConverting
+                                                    .value &&
+                                                formatController
+                                                        .selectedFormat
+                                                        .value ==
+                                                    'jpg'
+                                            ? SizedBox(
+                                                width: 16,
+                                                height: 16,
+                                                child:
+                                                    CircularProgressIndicator(
+                                                      strokeWidth: 2,
+                                                      color: Colors.white,
+                                                    ),
+                                              )
+                                            : FaIcon(
+                                                FontAwesomeIcons.image,
+                                                size: 16,
+                                              ),
+                                        label: Text('Convert to JPG'),
+                                        style: ElevatedButton.styleFrom(
+                                          padding: const EdgeInsets.symmetric(
+                                            vertical: 15,
+                                          ),
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.circular(
+                                              12,
+                                            ),
+                                          ),
                                         ),
                                       ),
-                                    )),
+                                    ),
                                   ),
                                 ),
                                 Expanded(
                                   child: Container(
                                     margin: const EdgeInsets.only(left: 5),
-                                    child: Obx(() => ElevatedButton.icon(
-                                      onPressed: hasOriginalImages.value && !formatController.isConverting.value
-                                          ? () => formatController.convertToFormat('png')
-                                          : null,
-                                      icon: formatController.isConverting.value && formatController.selectedFormat.value == 'png'
-                                          ? SizedBox(
-                                        width: 16,
-                                        height: 16,
-                                        child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
-                                      )
-                                          : FaIcon(FontAwesomeIcons.solidImage,size: 16),
-                                      label: Text('Convert to PNG'),
-                                      style: ElevatedButton.styleFrom(
-                                        padding: const EdgeInsets.symmetric(vertical: 15),
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.circular(12),
+                                    child: Obx(
+                                      () => ElevatedButton.icon(
+                                        onPressed:
+                                            hasOriginalImages.value &&
+                                                !formatController
+                                                    .isConverting
+                                                    .value
+                                            ? () => formatController
+                                                  .convertToFormat('png')
+                                            : null,
+                                        icon:
+                                            formatController
+                                                    .isConverting
+                                                    .value &&
+                                                formatController
+                                                        .selectedFormat
+                                                        .value ==
+                                                    'png'
+                                            ? SizedBox(
+                                                width: 16,
+                                                height: 16,
+                                                child:
+                                                    CircularProgressIndicator(
+                                                      strokeWidth: 2,
+                                                      color: Colors.white,
+                                                    ),
+                                              )
+                                            : FaIcon(
+                                                FontAwesomeIcons.solidImage,
+                                                size: 16,
+                                              ),
+                                        label: Text('Convert to PNG'),
+                                        style: ElevatedButton.styleFrom(
+                                          padding: const EdgeInsets.symmetric(
+                                            vertical: 15,
+                                          ),
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.circular(
+                                              12,
+                                            ),
+                                          ),
                                         ),
                                       ),
-                                    )),
+                                    ),
                                   ),
                                 ),
                               ],
@@ -171,50 +230,100 @@ class _ChangeFormatScreenState extends State<ChangeFormatScreen>
                                 Expanded(
                                   child: Container(
                                     margin: const EdgeInsets.only(right: 5),
-                                    child: Obx(() => ElevatedButton.icon(
-                                      onPressed: hasOriginalImages.value && !formatController.isConverting.value
-                                          ? () => formatController.convertToFormat('webp')
-                                          : null,
-                                      icon: formatController.isConverting.value && formatController.selectedFormat.value == 'webp'
-                                          ? SizedBox(
-                                        width: 16,
-                                        height: 16,
-                                        child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
-                                      )
-                                          : FaIcon(FontAwesomeIcons.imagePortrait,size: 16),
-                                      label: Text('Convert to WEBP'),
-                                      style: ElevatedButton.styleFrom(
-                                        padding: const EdgeInsets.symmetric(vertical: 15),
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.circular(12),
+                                    child: Obx(
+                                      () => ElevatedButton.icon(
+                                        onPressed:
+                                            hasOriginalImages.value &&
+                                                !formatController
+                                                    .isConverting
+                                                    .value
+                                            ? () => formatController
+                                                  .convertToFormat('webp')
+                                            : null,
+                                        icon:
+                                            formatController
+                                                    .isConverting
+                                                    .value &&
+                                                formatController
+                                                        .selectedFormat
+                                                        .value ==
+                                                    'webp'
+                                            ? SizedBox(
+                                                width: 16,
+                                                height: 16,
+                                                child:
+                                                    CircularProgressIndicator(
+                                                      strokeWidth: 2,
+                                                      color: Colors.white,
+                                                    ),
+                                              )
+                                            : FaIcon(
+                                                FontAwesomeIcons.imagePortrait,
+                                                size: 16,
+                                              ),
+                                        label: Text('Convert to WEBP'),
+                                        style: ElevatedButton.styleFrom(
+                                          padding: const EdgeInsets.symmetric(
+                                            vertical: 15,
+                                          ),
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.circular(
+                                              12,
+                                            ),
+                                          ),
                                         ),
                                       ),
-                                    )),
+                                    ),
                                   ),
                                 ),
                                 // Convert to BMP Button
                                 Expanded(
                                   child: Container(
                                     margin: const EdgeInsets.only(left: 5),
-                                    child: Obx(() => ElevatedButton.icon(
-                                      onPressed: hasOriginalImages.value && !formatController.isConverting.value
-                                          ? () => formatController.convertToFormat('bmp')
-                                          : null,
-                                      icon: formatController.isConverting.value && formatController.selectedFormat.value == 'bmp'
-                                          ? SizedBox(
-                                        width: 16,
-                                        height: 16,
-                                        child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
-                                      )
-                                          : FaIcon(FontAwesomeIcons.fileImage,size: 16),
-                                      label: Text('Convert to BMP'),
-                                      style: ElevatedButton.styleFrom(
-                                        padding: const EdgeInsets.symmetric(vertical: 15),
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.circular(12),
+                                    child: Obx(
+                                      () => ElevatedButton.icon(
+                                        onPressed:
+                                            hasOriginalImages.value &&
+                                                !formatController
+                                                    .isConverting
+                                                    .value
+                                            ? () => formatController
+                                                  .convertToFormat('bmp')
+                                            : null,
+                                        icon:
+                                            formatController
+                                                    .isConverting
+                                                    .value &&
+                                                formatController
+                                                        .selectedFormat
+                                                        .value ==
+                                                    'bmp'
+                                            ? SizedBox(
+                                                width: 16,
+                                                height: 16,
+                                                child:
+                                                    CircularProgressIndicator(
+                                                      strokeWidth: 2,
+                                                      color: Colors.white,
+                                                    ),
+                                              )
+                                            : FaIcon(
+                                                FontAwesomeIcons.fileImage,
+                                                size: 16,
+                                              ),
+                                        label: Text('Convert to BMP'),
+                                        style: ElevatedButton.styleFrom(
+                                          padding: const EdgeInsets.symmetric(
+                                            vertical: 15,
+                                          ),
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.circular(
+                                              12,
+                                            ),
+                                          ),
                                         ),
                                       ),
-                                    )),
+                                    ),
                                   ),
                                 ),
                               ],
@@ -226,48 +335,70 @@ class _ChangeFormatScreenState extends State<ChangeFormatScreen>
                     Padding(
                       padding: EdgeInsets.only(top: 12),
                       child: Obx(() {
-                        if (formatController.hasConvertedFiles.value && formatController.convertedFiles.isNotEmpty) {
+                        if (formatController.hasConvertedFiles.value &&
+                            formatController.convertedFiles.isNotEmpty) {
                           return Container(
                             margin: const EdgeInsets.symmetric(horizontal: 20),
                             child: Column(
                               children: [
                                 Row(
                                   mainAxisSize: MainAxisSize.max,
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
                                   children: [
                                     // Download All Converted Files Button
                                     Container(
                                       width: screenWeight / 2.5,
                                       margin: const EdgeInsets.only(bottom: 10),
                                       child: ElevatedButton.icon(
-                                        onPressed: () => formatController.downloadAllFiles(),
-                                        icon: FaIcon(FontAwesomeIcons.download,size: 16),
-                                        label: Text('Download (${formatController.convertedFiles.length})'),
+                                        onPressed: () =>
+                                            formatController.downloadAllFiles(),
+                                        icon: FaIcon(
+                                          FontAwesomeIcons.download,
+                                          size: 16,
+                                        ),
+                                        label: Text(
+                                          'Download (${formatController.convertedFiles.length})',
+                                        ),
                                         style: ElevatedButton.styleFrom(
                                           backgroundColor: Colors.green,
                                           foregroundColor: Colors.white,
-                                          padding: const EdgeInsets.symmetric(vertical: 15),
+                                          padding: const EdgeInsets.symmetric(
+                                            vertical: 15,
+                                          ),
                                           shape: RoundedRectangleBorder(
-                                            borderRadius: BorderRadius.circular(12),
+                                            borderRadius: BorderRadius.circular(
+                                              12,
+                                            ),
                                           ),
                                         ),
                                       ),
                                     ),
 
-
                                     Container(
                                       width: screenWeight / 2.5,
                                       margin: const EdgeInsets.only(bottom: 10),
                                       child: ElevatedButton.icon(
-                                        onPressed: () => formatController.shareAllFiles(),
-                                        icon: FaIcon(FontAwesomeIcons.arrowUpRightFromSquare,size: 16),
+                                        onPressed: () =>
+                                            formatController.shareAllFiles(),
+                                        icon: FaIcon(
+                                          FontAwesomeIcons
+                                              .arrowUpRightFromSquare,
+                                          size: 16,
+                                        ),
                                         label: Text('Share All'),
                                         style: ElevatedButton.styleFrom(
-                                          backgroundColor: Theme.of(context).colorScheme.primary,
+                                          backgroundColor: Theme.of(
+                                            context,
+                                          ).colorScheme.primary,
                                           foregroundColor: Colors.white,
-                                          padding: const EdgeInsets.symmetric(vertical: 15),
+                                          padding: const EdgeInsets.symmetric(
+                                            vertical: 15,
+                                          ),
                                           shape: RoundedRectangleBorder(
-                                            borderRadius: BorderRadius.circular(12),
+                                            borderRadius: BorderRadius.circular(
+                                              12,
+                                            ),
                                           ),
                                         ),
                                       ),
@@ -275,14 +406,17 @@ class _ChangeFormatScreenState extends State<ChangeFormatScreen>
                                   ],
                                 ),
                                 // Individual Converted File Actions
-                                if (formatController.convertedFiles.length >= 1) ...[
+                                if (formatController.convertedFiles.length >=
+                                    1) ...[
                                   const SizedBox(height: 10),
                                   Text(
                                     'Converted Images',
                                     style: TextStyle(
                                       fontSize: 16,
                                       fontWeight: FontWeight.w600,
-                                      color: Theme.of(context).colorScheme.onBackground,
+                                      color: Theme.of(
+                                        context,
+                                      ).colorScheme.onBackground,
                                     ),
                                   ),
                                   const SizedBox(height: 10),
@@ -290,31 +424,54 @@ class _ChangeFormatScreenState extends State<ChangeFormatScreen>
                                     height: screenHeight / 5.5,
                                     child: ListView.builder(
                                       scrollDirection: Axis.horizontal,
-                                      itemCount: formatController.convertedFiles.length,
+                                      itemCount: formatController
+                                          .convertedFiles
+                                          .length,
                                       itemBuilder: (context, index) {
-                                        final file = formatController.convertedFiles[index];
-                                        final fileName = file.path.split('/').last;
-                                        final extension = fileName.split('.').last.toUpperCase();
+                                        final file = formatController
+                                            .convertedFiles[index];
+                                        final fileName = file.path
+                                            .split('/')
+                                            .last;
+                                        final extension = fileName
+                                            .split('.')
+                                            .last
+                                            .toUpperCase();
 
                                         return Container(
                                           width: 200,
-                                          margin: const EdgeInsets.only(right: 10),
-                                          padding: const EdgeInsets.only(top: 12),
+                                          margin: const EdgeInsets.only(
+                                            right: 10,
+                                          ),
+                                          padding: const EdgeInsets.only(
+                                            top: 12,
+                                            left: 6,
+                                            right: 6
+                                          ),
                                           decoration: BoxDecoration(
-                                            color: Theme.of(context).colorScheme.onPrimary,
+                                            color: Theme.of(
+                                              context,
+                                            ).colorScheme.onPrimary,
                                             border: Border.all(
-                                              color: Theme.of(context).colorScheme.outline.withOpacity(0.4),
+                                              color: Theme.of(context)
+                                                  .colorScheme
+                                                  .outline
+                                                  .withOpacity(0.4),
                                             ),
-                                            borderRadius: BorderRadius.circular(12),
+                                            borderRadius: BorderRadius.circular(
+                                              12,
+                                            ),
                                           ),
                                           child: Column(
-                                            mainAxisAlignment: MainAxisAlignment.center,
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.center,
                                             children: [
-
                                               Icon(
                                                 _getFileTypeIcon(extension),
                                                 size: 30,
-                                                color: _getFileTypeColor(extension),
+                                                color: _getFileTypeColor(
+                                                  extension,
+                                                ),
                                               ),
                                               const SizedBox(height: 5),
                                               Text(
@@ -327,36 +484,63 @@ class _ChangeFormatScreenState extends State<ChangeFormatScreen>
                                               const SizedBox(height: 5),
                                               // File format badge
                                               Container(
-                                                padding: EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                                                padding: EdgeInsets.symmetric(
+                                                  horizontal: 8,
+                                                  vertical: 2,
+                                                ),
                                                 decoration: BoxDecoration(
-                                                  color: _getFileTypeColor(extension).withOpacity(0.1),
-                                                  borderRadius: BorderRadius.circular(8),
+                                                  color: _getFileTypeColor(
+                                                    extension,
+                                                  ).withOpacity(0.1),
+                                                  borderRadius:
+                                                      BorderRadius.circular(8),
                                                 ),
                                                 child: Text(
                                                   extension,
                                                   style: TextStyle(
                                                     fontSize: 8,
                                                     fontWeight: FontWeight.bold,
-                                                    color: _getFileTypeColor(extension),
+                                                    color: _getFileTypeColor(
+                                                      extension,
+                                                    ),
                                                   ),
                                                 ),
                                               ),
                                               Row(
-                                                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment
+                                                        .spaceEvenly,
                                                 children: [
                                                   IconButton(
-                                                    onPressed: () => formatController.downloadFile(file),
-                                                    icon: FaIcon(FontAwesomeIcons.download,size: 18),
+                                                    onPressed: () =>
+                                                        formatController
+                                                            .downloadFile(file),
+                                                    icon: FaIcon(
+                                                      FontAwesomeIcons.download,
+                                                      size: 18,
+                                                    ),
                                                     tooltip: 'Download',
                                                   ),
                                                   IconButton(
-                                                    onPressed: () => formatController.shareFile(file),
-                                                    icon: FaIcon(FontAwesomeIcons.arrowUpRightFromSquare,size: 17),
+                                                    onPressed: () =>
+                                                        formatController
+                                                            .shareFile(file),
+                                                    icon: FaIcon(
+                                                      FontAwesomeIcons
+                                                          .arrowUpRightFromSquare,
+                                                      size: 17,
+                                                    ),
                                                     tooltip: 'Share',
                                                   ),
                                                   IconButton(
-                                                    onPressed: () => _showDeleteConfirmation(file),
-                                                    icon: FaIcon(FontAwesomeIcons.trashCan,size: 18),
+                                                    onPressed: () =>
+                                                        _showDeleteConfirmation(
+                                                          file,
+                                                        ),
+                                                    icon: FaIcon(
+                                                      FontAwesomeIcons.trashCan,
+                                                      size: 18,
+                                                    ),
                                                     tooltip: 'Delete',
                                                   ),
                                                 ],
@@ -375,7 +559,6 @@ class _ChangeFormatScreenState extends State<ChangeFormatScreen>
                         return SizedBox.shrink();
                       }),
                     ),
-
 
                     // if (hasOriginalImages.value && formatController.hasConvertedFiles.value)
                     //   Container(
@@ -396,7 +579,6 @@ class _ChangeFormatScreenState extends State<ChangeFormatScreen>
                     //   ),
                   ],
                 ),
-
               ],
             );
           }),
@@ -404,7 +586,6 @@ class _ChangeFormatScreenState extends State<ChangeFormatScreen>
       ),
     );
   }
-
 
   IconData _getFileTypeIcon(String extension) {
     switch (extension.toLowerCase()) {
@@ -465,6 +646,34 @@ class _ChangeFormatScreenState extends State<ChangeFormatScreen>
     );
   }
 
+  void _showRemoveConfirmation(int index, CompressedImage file) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Remove Image'),
+          content: Text('Are you sure you want to remove this image?'),
+          actions: [
+            TextButton(
+              child: Text('Cancel'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: Text('Remove', style: TextStyle(color: Colors.red)),
+              onPressed: () {
+                Navigator.of(context).pop();
+                formatController.removeConvertedImageAtIndex(index);
+                imageController.removeCompressImage(file);
+                imageController.removeOriginalImage(file);
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
 
   void _showClearAllDialog() {
     showDialog(
@@ -472,7 +681,9 @@ class _ChangeFormatScreenState extends State<ChangeFormatScreen>
       builder: (BuildContext context) {
         return AlertDialog(
           title: Text('Clear All Files'),
-          content: Text('Are you sure you want to clear all converted files? This action cannot be undone.'),
+          content: Text(
+            'Are you sure you want to clear all converted files? This action cannot be undone.',
+          ),
           actions: [
             TextButton(
               child: Text('Cancel'),
@@ -498,7 +709,11 @@ class _ChangeFormatScreenState extends State<ChangeFormatScreen>
     imageController.clearOriginalList();
   }
 
-  Widget _buildDropZone(BuildContext context, double containerHeight, ImageController imageController) {
+  Widget _buildDropZone(
+    BuildContext context,
+    double containerHeight,
+    ImageController imageController,
+  ) {
     return GestureDetector(
       onTap: () {
         imageController.pickImageFromGallery();
@@ -513,7 +728,9 @@ class _ChangeFormatScreenState extends State<ChangeFormatScreen>
             color: Theme.of(context).colorScheme.primary.withOpacity(0.5),
             width: 2,
           ),
-          color: isDarkMode ? Theme.of(context).colorScheme.surface : const Color(0xFFFBF9FF),
+          color: isDarkMode
+              ? Theme.of(context).colorScheme.surface
+              : const Color(0xFFFBF9FF),
           boxShadow: [
             BoxShadow(
               color: Theme.of(context).colorScheme.primary.withOpacity(0.05),
@@ -545,7 +762,7 @@ class _ChangeFormatScreenState extends State<ChangeFormatScreen>
                   FaIcon(
                     FontAwesomeIcons.image,
                     size: 120,
-                    color: Theme.of(context).colorScheme.primary
+                    color: Theme.of(context).colorScheme.primary,
                   ),
                   const SizedBox(height: 10),
                   Text(
@@ -559,12 +776,17 @@ class _ChangeFormatScreenState extends State<ChangeFormatScreen>
                   ),
                   const SizedBox(height: 10),
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 8,
+                    ),
                     decoration: BoxDecoration(
                       color: Theme.of(context).colorScheme.surface,
                       borderRadius: BorderRadius.circular(20),
                       border: Border.all(
-                        color: Theme.of(context).colorScheme.outline.withOpacity(0.3),
+                        color: Theme.of(
+                          context,
+                        ).colorScheme.outline.withOpacity(0.3),
                       ),
                     ),
                     child: Text(
@@ -587,7 +809,11 @@ class _ChangeFormatScreenState extends State<ChangeFormatScreen>
   //endregion
 
   //region METHOD FOR DISPLAYING IMAGES CARDS - Same as PDF screen
-  Widget _buildImageCarousel(List<CompressedImage> files, double containerHeight, RxBool hasOriginalImages) {
+  Widget _buildImageCarousel(
+    List<CompressedImage> files,
+    double containerHeight,
+    RxBool hasOriginalImages,
+  ) {
     final double height = MediaQuery.sizeOf(context).height;
     final double width = MediaQuery.sizeOf(context).width;
     final CarouselController controller = CarouselController(initialItem: 0);
@@ -595,7 +821,6 @@ class _ChangeFormatScreenState extends State<ChangeFormatScreen>
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
@@ -611,11 +836,16 @@ class _ChangeFormatScreenState extends State<ChangeFormatScreen>
             InkWell(
               splashColor: Theme.of(context).colorScheme.surface,
               borderRadius: BorderRadius.circular(16),
-              onTap:() => _showClearAllDialog(),
+              onTap: () => _showClearAllDialog(),
               child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 6,
+                ),
                 decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.secondary.withOpacity(0.2),
+                  color: Theme.of(
+                    context,
+                  ).colorScheme.secondary.withOpacity(0.2),
                   borderRadius: BorderRadius.circular(16),
                 ),
                 child: Text(
@@ -644,7 +874,9 @@ class _ChangeFormatScreenState extends State<ChangeFormatScreen>
                 controller: controller,
                 itemSnapping: true,
                 flexWeights: const [1, 7, 1],
-                children: files.map((file) {
+                children: files.asMap().entries.map((entry) {
+                  final int index = entry.key;
+                  final CompressedImage file = entry.value;
                   return Stack(
                     alignment: Alignment.center,
                     children: [
@@ -670,34 +902,52 @@ class _ChangeFormatScreenState extends State<ChangeFormatScreen>
                           child: BackdropFilter(
                             filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
                             child: Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 5),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 18,
+                                vertical: 5,
+                              ),
                               decoration: BoxDecoration(
-                                color: Theme.of(context).colorScheme.onPrimary.withOpacity(0.5),
+                                color: Theme.of(
+                                  context,
+                                ).colorScheme.onPrimary.withOpacity(0.5),
                                 borderRadius: BorderRadius.circular(20),
                               ),
                               child: SingleChildScrollView(
                                 scrollDirection: Axis.horizontal,
                                 child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceAround,
                                   mainAxisSize: MainAxisSize.min,
                                   children: [
                                     GestureDetector(
-                                      onTap: () {
-                                        imageController.removeCompressImage(file);
-                                        imageController.removeOriginalImage(file);
-                                        formatController.removeFile(File(file.filePath));
-                                      },
+                                      onTap: () =>
+                                          _showRemoveConfirmation(index, file),
                                       child: Container(
-                                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                                        padding: const EdgeInsets.symmetric(
+                                          horizontal: 12,
+                                          vertical: 8,
+                                        ),
                                         decoration: BoxDecoration(
                                           color: Colors.red.withOpacity(0.7),
-                                          borderRadius: BorderRadius.circular(15),
+                                          borderRadius: BorderRadius.circular(
+                                            15,
+                                          ),
                                         ),
                                         child: Row(
                                           children: [
-                                            FaIcon(FontAwesomeIcons.trashCan,size: 16,color: Colors.white,),
+                                            FaIcon(
+                                              FontAwesomeIcons.trashCan,
+                                              size: 16,
+                                              color: Colors.white,
+                                            ),
                                             SizedBox(width: 5),
-                                            Text("Remove", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                                            Text(
+                                              "Remove",
+                                              style: TextStyle(
+                                                color: Colors.white,
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                            ),
                                           ],
                                         ),
                                       ),
@@ -710,16 +960,34 @@ class _ChangeFormatScreenState extends State<ChangeFormatScreen>
                                         formatController.convertedFiles.clear();
                                       },
                                       child: Container(
-                                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                                        padding: const EdgeInsets.symmetric(
+                                          horizontal: 12,
+                                          vertical: 8,
+                                        ),
                                         decoration: BoxDecoration(
-                                          color: Theme.of(context).colorScheme.primary.withOpacity(0.7),
-                                          borderRadius: BorderRadius.circular(15),
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .primary
+                                              .withOpacity(0.7),
+                                          borderRadius: BorderRadius.circular(
+                                            15,
+                                          ),
                                         ),
                                         child: Row(
                                           children: [
-                                            FaIcon(FontAwesomeIcons.pen,size: 15,color: Colors.white,),
+                                            FaIcon(
+                                              FontAwesomeIcons.pen,
+                                              size: 15,
+                                              color: Colors.white,
+                                            ),
                                             SizedBox(width: 5),
-                                            Text("Edit  ", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                                            Text(
+                                              "Edit  ",
+                                              style: TextStyle(
+                                                color: Colors.white,
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                            ),
                                           ],
                                         ),
                                       ),
@@ -787,8 +1055,8 @@ class _ChangeFormatScreenState extends State<ChangeFormatScreen>
             const SizedBox(height: 6),
             Text(
               '1. Select or drop your images\n'
-                  '2. Choose format (JPG, PNG, WEBP, BMP)\n'
-                  '3. Get converted images instantly',
+              '2. Choose format (JPG, PNG, WEBP, BMP)\n'
+              '3. Get converted images instantly',
               textAlign: TextAlign.center,
               style: TextStyle(
                 color: Theme.of(context).colorScheme.onSurface,
@@ -802,5 +1070,6 @@ class _ChangeFormatScreenState extends State<ChangeFormatScreen>
       ),
     );
   }
-//endregion
+
+  //endregion
 }

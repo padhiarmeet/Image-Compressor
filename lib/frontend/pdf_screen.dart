@@ -120,7 +120,7 @@ class _PdfScreenState extends State<PdfScreen> with TickerProviderStateMixin {
                   _buildInstructions(context),
                   Spacer(),
                   Center(
-                      child: BannerAdWidget(adUnitId: "ca-app-pub-3940256099942544/6300978111")
+                      child: BannerAdWidget(adUnitId: "ca-app-pub-9176383426179540/6252677065")
                   ),
                 ],
                 Column(

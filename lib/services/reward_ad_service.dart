@@ -5,7 +5,7 @@ class RewardAdService {
 
   static Future<void> loadRewardAd() async {
     await RewardedAd.load(
-      adUnitId: "ca-app-pub-3940256099942544/5224354917",
+      adUnitId: "ca-app-pub-9176383426179540/8035983280",
       request: AdRequest(),
       rewardedAdLoadCallback: RewardedAdLoadCallback(
         onAdLoaded: (RewardedAd ad) {

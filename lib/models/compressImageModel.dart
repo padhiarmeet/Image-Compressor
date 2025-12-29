@@ -886,16 +886,10 @@ class ImageModel extends GetxController {
           continue;
         }
 
-        final bytes = await file.readAsBytes();
 
-        // Generate a unique filename
-        final fileName =
-            'compressed_${DateTime.now().millisecondsSinceEpoch}.${image.format}';
-
-        final result = await ImageGallerySaverPlus.saveImage(
-          bytes,
-          name: fileName,
-          quality: 100,
+        final result = await ImageGallerySaverPlus.saveFile(
+          file.path,
+          name: 'compressed_${DateTime.now().millisecondsSinceEpoch}.jpg',
         );
 
         if (result['isSuccess'] == true) {
@@ -967,15 +961,9 @@ class ImageModel extends GetxController {
         return;
       }
 
-      final bytes = await file.readAsBytes();
-
-      final fileName =
-          'compressed_${DateTime.now().millisecondsSinceEpoch}${path.extension(file.path)}';
-
-      final result = await ImageGallerySaverPlus.saveImage(
-        bytes,
-        name: fileName,
-        quality: 100,
+      final result = await ImageGallerySaverPlus.saveFile(
+        file.path,
+        name: 'compressed_${DateTime.now().millisecondsSinceEpoch}.jpg',
       );
 
       if (result['isSuccess']) {

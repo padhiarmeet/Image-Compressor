@@ -180,7 +180,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                                                   ),
                                                 );
                                               }
-                                              return const Icon(Icons.broken_image_outlined, size: 24);
+                                              return Center(child: const Icon(Icons.broken_image_outlined, size: 30,color: Colors.grey,));
                                             },
                                           )
                                         else

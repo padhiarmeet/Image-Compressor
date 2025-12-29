@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
+import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:get/get.dart';
 import 'package:image/image.dart' as img;
 import 'package:image_gallery_saver_plus/image_gallery_saver_plus.dart';
@@ -99,6 +100,26 @@ class FormatChangeController extends GetxController {
           continue;
         }
 
+        final timestamp = DateTime.now().millisecondsSinceEpoch;
+
+        if (targetFormat.toLowerCase() == 'webp') {
+          final webpPath =
+              '${output.path}/converted_${timestamp}_${imageFile.id ?? timestamp}.webp';
+
+          final result = await FlutterImageCompress.compressAndGetFile(
+            file.path,
+            webpPath,
+            format: CompressFormat.webp,
+            quality: 75,
+            keepExif: false,
+          );
+
+          if (result != null) {
+            convertedFiles.add(File(result.path));
+          }
+          continue;
+        }
+
         // Read and decode the image
         final bytes = await file.readAsBytes();
         final image = img.decodeImage(bytes);
@@ -119,7 +140,7 @@ class FormatChangeController extends GetxController {
         switch (targetFormat.toLowerCase()) {
           case 'jpg':
           case 'jpeg':
-            encodedBytes = img.encodeJpg(image, quality: 90);
+            encodedBytes = img.encodeJpg(image, quality: 70);
             extension = 'jpg';
             break;
           case 'png':
@@ -144,7 +165,6 @@ class FormatChangeController extends GetxController {
         }
 
         // Save the converted file
-        final timestamp = DateTime.now().millisecondsSinceEpoch;
         final fileName =
             'converted_${timestamp}_${imageFile.id ?? timestamp}.$extension';
         final convertedFile = File('${output.path}/$fileName');

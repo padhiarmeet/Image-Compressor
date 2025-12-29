@@ -8,7 +8,7 @@ import 'package:image_compressor/controllers/compressImageController.dart';
 
 import '../adMob/bannerAdWidget.dart';
 
-class Homepage extends StatefulWidget {
+class Homepage extends StatefulWidget{
   const Homepage({super.key});
 
   @override
@@ -131,7 +131,8 @@ class _HomepageState extends State<Homepage> with TickerProviderStateMixin {
                   _buildInstructions(context),
                   Spacer(),
                   Center(
-                      child: BannerAdWidget(adUnitId: "ca-app-pub-9176383426179540/1878317784")
+                      child: const BannerAdWidget(adUnitId: "ca-app-pub-9176383426179540/1878317784")
+                      // child: BannerAdWidget(adUnitId: "ca-app-pub-3940256099942544/6300978111 ")
                   ),
                 ],
               ],

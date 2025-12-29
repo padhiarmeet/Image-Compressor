@@ -57,6 +57,22 @@ class _BannerAdWidgetState extends State<BannerAdWidget> {
       width: _bannerAd!.size.width.toDouble(),
       child: AdWidget(ad: _bannerAd!),
     )
-        : const SizedBox(child: Text('Ad is loading...'));
+        : Container(
+      alignment: Alignment.center,
+      width: 320, // Standard Banner Width
+      height: 50, // Standard Banner Height
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.onPrimary.withOpacity(0.5), // Subtle gray placeholder
+        borderRadius: BorderRadius.circular(4), // Slight curve to look polished
+      ),
+      child: const Text(
+        'Advertisement',
+        style: TextStyle(
+          color: Colors.grey,
+          fontSize: 10,
+          fontWeight: FontWeight.w500,
+        ),
+      ),
+    );
   }
 }

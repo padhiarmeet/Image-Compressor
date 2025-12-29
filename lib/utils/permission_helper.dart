@@ -14,7 +14,6 @@ class PermissionHelper {
   /// Requests the appropriate storage permission based on the Android version.
   /// Returns the permission status after the request.
   static Future<PermissionStatus> requestStoragePermission() async {
-    // iOS doesn't need explicit storage permission for saving to gallery
     if (!Platform.isAndroid) {
       return PermissionStatus.granted;
     }
@@ -24,16 +23,16 @@ class PermissionHelper {
       final sdkInt = androidInfo.version.sdkInt;
 
       if (sdkInt >= 33) {
-        // Android 13+ (API 33): Use granular media permissions
+
         final status = await Permission.photos.request();
         return status;
       } else {
-        // Android 12 and below (API ≤32): Use legacy storage permission
+
         final status = await Permission.storage.request();
         return status;
       }
     } catch (e) {
-      // Fallback: try storage permission first, then photos
+
       var status = await Permission.storage.request();
       if (status.isDenied) {
         status = await Permission.photos.request();
